@@ -1,0 +1,23 @@
+{
+  "name": "social-media-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A social media app with React TypeScript frontend and Node.js Express TypeScript backend",
+  "author": "Your Name",
+  "license": "ISC",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=frontend\" \"npm run dev --workspace=backend\"",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write ."
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "concurrently": "^7.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}

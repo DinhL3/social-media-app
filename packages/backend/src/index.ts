@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 // .env file should be in /packages/backend/
@@ -23,6 +24,7 @@ mongoose
 
 //Middleware
 app.use(express.json());
+app.use(cookieParser());
 
 //Routes
 app.use('/api/auth', authRoutes);

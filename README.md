@@ -4,6 +4,7 @@ This is a monorepo for a Social Media App, made with React TypeScript Frontend, 
 
 ## Installation
 
+### Basic setup
 - Clone this repo
 - Cd into the root directory
 - Run <code>npm install</code> to install dependencies for both front and backend
@@ -11,6 +12,23 @@ This is a monorepo for a Social Media App, made with React TypeScript Frontend, 
 - If you want to install new libraries, add <code>--workspace=frontend</code> or <code>--workspace=backend</code> at the end of your npm install command. For example <code>npm install @mui/material @emotion/react @emotion/styled --workspace=frontend
   </code>
 
+### Get backend and local MongoDB up and running
+* Create a file named `.env` in `packages/backend`
+* Copy and paste this content into the `.env` file
+```
+DATABASE_URL="mongodb://127.0.0.1/socialMediaApp?directConnection=true"
+JWT_SECRET="<ask for secret from our developers>"
+```
+* Download and MongoDB Community Server and follow the default installation from [here](https://www.mongodb.com/try/download/community)
+* Open MongoDBCompass and connect to `localhost:27017` (should be there by default), to confirm that the local database is up and running.
+* Use Postman or another method of your choice to send requests. In my case, I sent a Post request to `http://localhost:5000/api/auth/register`, with this body/raw/json:
+  ```
+  {
+  "username": "testuser",
+  "password": "password123"
+  }
+  ```
+* Refresh the database in MongoDBCompas, you should see `socialMediaApp` database was created, `users` collection, and a new user inside.
 
 ## Formatting
 * Please install the the Prettier extension and set it as your default formatter in VSCode.

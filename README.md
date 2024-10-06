@@ -6,6 +6,7 @@ This is a monorepo for a Social Media App, made with React TypeScript Frontend, 
 
 ### Basic setup
 - Clone this repo
+* Or if you are already working on it, make it a habit to `git checkout main` & `git pull` (get the lastest change in main branch), then `git checkout <your-branch>` & `git merge main` (merge the latest changes in main branch to your branch), to solve conflicts early.
 - Cd into the root directory
 - Run `npm install` to install dependencies for both front and backend
 - Run `npm run dev` and check the console for the address of front and backend.

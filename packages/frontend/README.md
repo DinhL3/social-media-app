@@ -1,50 +1,15 @@
-# React + TypeScript + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Introduction
+Our frontend is made with React TypeScript, Router, Redux, Material UI.
 
-Currently, two official plugins are available:
+## Material UI Components
+We use Material UI Components instead of plain HTML & CSS due to limited time budget.
+Details on how to add, customize, style components can be found on Material documentation. Just search for example `Material list`.
+Try to find MUI components that suit your needs first before using simple html tags, since those already have responsive formatting built in. E.g. `<Typography variant="h3"/>` instead of `<h3>`.
+They are very specific on how to change their button color, components pallete, so try to find a solution there since in many cases, try to change things using in-line css e.g. `sx={{background: 'red'}}` does not work.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react';
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-});
-```
+## General structure
+Due to the way React Router is set up, the pages are "routes" and you should look it `src/routes` first, then follow the component chain. For example, if I want to work on the home page, I open `src/routes/root.tsx` then continue from there.
+Note: the reusable layout of all pages (like how the nav bar is present in all pages), is in `src/Layout.tsx`
+I will try to explain via comments as much as possible, but most of the things in main.tsx is how the libraries required stuff to be written, a wrapped around b, etc.

@@ -40,3 +40,6 @@ JWT_SECRET="<ask for secret from our developers>"
 * For example: `feature/dinh-nav-bar`
 * The above convention will help sort all branches into neat trees in Git GUI like Source Tree, and we can keep track of the branches we work on easier.
 * Common types for branches: feature, fix, refactor, test, docs, etc.
+
+## Other development instructions
+* Instructions on how to work on the code will be added in the README file in the respective `packages/frontend` or `packages/backend` folder.

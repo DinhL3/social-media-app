@@ -15,9 +15,11 @@ import {
 import {
   Menu as MenuIcon,
   EmojiEmotions as EmojiEmotionsIcon,
+  AccountCircle as AccountCircleIcon,
 } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
 
-const pages = ['Products', 'Pricing', 'Blog'];
+const pages = ['Home', 'Discover', 'About'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -70,8 +72,13 @@ function ResponsiveAppBar() {
           sx={{ display: { xs: 'block', md: 'none' } }}
         >
           {pages.map((page) => (
-            <MenuItem key={page} onClick={handleCloseNavMenu}>
-              <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+            <MenuItem
+              key={page}
+              component={Link}
+              to={page === 'Home' ? '/' : `/${page.toLowerCase()}`}
+              onClick={handleCloseNavMenu}
+            >
+              <Typography textAlign="center">{page}</Typography>
             </MenuItem>
           ))}
         </Menu>
@@ -123,8 +130,9 @@ function ResponsiveAppBar() {
         {pages.map((page) => (
           <Button
             key={page}
-            onClick={handleCloseNavMenu}
-            sx={{ my: 2, color: 'white', display: 'block' }}
+            component={Link}
+            to={page === 'Home' ? '/' : `/${page.toLowerCase()}`}
+            sx={{ my: 2, color: 'white', display: 'block', mx: 1 }}
           >
             {page}
           </Button>
@@ -140,9 +148,14 @@ function ResponsiveAppBar() {
           {renderDesktopMenu()}
           {renderMobileMenu()}
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+            <Tooltip title="Open user menu">
+              <IconButton
+                color="inherit"
+                onClick={handleOpenUserMenu}
+                sx={{ p: 0 }}
+              >
+                {/* Change this to Avater component with src=<user's profile pic from backend> in the future */}
+                <AccountCircleIcon sx={{ fontSize: 32 }} />
               </IconButton>
             </Tooltip>
             <Menu

@@ -13,8 +13,10 @@ import Root from './routes/root.tsx';
 import About from './routes/about.tsx';
 import Layout from './Layout.tsx';
 
-import store from './app/store';  // Your Redux store
-import { Provider } from 'react-redux';  // Import the Redux Provider
+import store from './app/store'; // Your Redux store
+import { Provider } from 'react-redux'; // Import the Redux Provider
+import Login from './routes/login.tsx';
+import Register from './routes/register.tsx';
 
 // This way is of setting up react-router-dom is based on the official documentation of v6.26.2
 
@@ -30,6 +32,14 @@ const router = createBrowserRouter([
       {
         path: 'about',
         element: <About />,
+      },
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'register',
+        element: <Register />,
       },
     ],
   },

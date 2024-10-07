@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   AppBar,
   Box,
@@ -7,17 +8,19 @@ import {
   Typography,
   Menu,
   Container,
-  Avatar,
-  Button,
   Tooltip,
   MenuItem,
+  Button,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   EmojiEmotions as EmojiEmotionsIcon,
   AccountCircle as AccountCircleIcon,
+  Login as LoginIcon,
 } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { RootState } from '../../app/store';
+import { logout } from '../../features/auth/authSlice'; // Import the logout action
 
 const pages = ['Home', 'Discover', 'About'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -25,10 +28,18 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [loggedOut, setLoggedOut] = useState(false); // State to trigger redirection after logout
+  const dispatch = useDispatch();
+
+  // Get the authentication state from Redux
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated,
+  );
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -39,6 +50,12 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout()); // Dispatch the logout action
+    setLoggedOut(true); // Set the state to trigger redirection
+    handleCloseUserMenu(); // Close the user menu
   };
 
   // Mobile Menu Function
@@ -141,48 +158,57 @@ function ResponsiveAppBar() {
     </>
   );
 
+  const renderUserMenu = () => (
+    <Box sx={{ flexGrow: 0 }}>
+      <Tooltip title="Open user menu">
+        <IconButton color="inherit" onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+          <AccountCircleIcon sx={{ fontSize: 32 }} />
+        </IconButton>
+      </Tooltip>
+      <Menu
+        sx={{ mt: '45px' }}
+        id="menu-appbar"
+        anchorEl={anchorElUser}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={Boolean(anchorElUser)}
+        onClose={handleCloseUserMenu}
+      >
+        {settings.map((setting) => (
+          <MenuItem
+            key={setting}
+            onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}
+          >
+            <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
+  );
+
+  const renderLoginMenu = () => (
+    <Tooltip title="Login">
+      <IconButton component={Link} to="/login" color="inherit">
+        <LoginIcon />
+      </IconButton>
+    </Tooltip>
+  );
+
   return (
     <AppBar position="static">
+      {loggedOut && <Navigate to="/" replace />} {/* Redirect after logout */}
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {renderDesktopMenu()}
           {renderMobileMenu()}
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open user menu">
-              <IconButton
-                color="inherit"
-                onClick={handleOpenUserMenu}
-                sx={{ p: 0 }}
-              >
-                {/* Change this to Avater component with src=<user's profile pic from backend> in the future */}
-                <AccountCircleIcon sx={{ fontSize: 32 }} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>
-                    {setting}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {isAuthenticated ? renderUserMenu() : renderLoginMenu()}
         </Toolbar>
       </Container>
     </AppBar>

@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
 import cookieParser from 'cookie-parser';
+import cors from 'cors'; // Import CORS
+import morgan from 'morgan'; // Import Morgan
 
 dotenv.config();
 // .env file should be in /packages/backend/
@@ -22,11 +24,18 @@ mongoose
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-//Middleware
-app.use(express.json());
-app.use(cookieParser());
+// Middleware
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Allow requests from the frontend
+    credentials: true, // Enable cookies to be sent along with the request
+  }),
+);
+app.use(morgan('dev')); // Log requests to the console
+app.use(express.json()); // For parsing application/json
+app.use(cookieParser()); // For parsing cookies
 
-//Routes
+// Routes
 app.use('/api/auth', authRoutes);
 
 app.get('/', (req: Request, res: Response) => {

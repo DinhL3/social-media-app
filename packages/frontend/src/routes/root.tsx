@@ -1,14 +1,15 @@
 import { Container, Typography } from '@mui/material';
-import ReduxCounter from '../components/ReduxDummy/ReduxCounter';
 
 export default function Root() {
   return (
     <>
       <Container maxWidth="md">
-        <Typography variant="h3" gutterBottom>
-          Redux Counter
+        <Typography variant="h3" sx={{ mt: 3 }} gutterBottom>
+          Welcome to our social media app
         </Typography>
-        <ReduxCounter />
+        <Typography variant="body1" gutterBottom>
+          Let's meet new friends and chat!
+        </Typography>
       </Container>
     </>
   );

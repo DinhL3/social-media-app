@@ -1,4 +1,5 @@
-import { Container, Typography } from '@mui/material';
+import { Container, Typography, Link as MaterialLink } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 export default function Register() {
   return (
@@ -8,7 +9,11 @@ export default function Register() {
       </Typography>
 
       <Typography variant="body1" gutterBottom>
-        This is the register page
+        Already have an account? Click{' '}
+        <MaterialLink component={RouterLink} to="/login">
+          here
+        </MaterialLink>{' '}
+        to log in.
       </Typography>
     </Container>
   );

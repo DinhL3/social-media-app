@@ -8,15 +8,14 @@ import {
   Stack,
   Box,
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../app/store'; // Import your RootState type
+import { RootState, AppDispatch } from '../app/store'; // Import your RootState and AppDispatch types
 import { loginUser } from '../features/auth/authSlice'; // Import the loginUser thunk
 
 export default function Login() {
   const [form, setForm] = useState({ username: '', password: '' });
-  const dispatch = useDispatch();
-  const navigate = useNavigate(); // For navigation after successful login
+  const dispatch = useDispatch<AppDispatch>();
 
   // Get Redux state
   const { loading, error, isAuthenticated } = useSelector(
@@ -38,9 +37,9 @@ export default function Login() {
     dispatch(loginUser({ username: form.username, password: form.password }));
   };
 
-  // Redirect the user to the home page if authenticated
+  // If the user is authenticated, navigate to the dashboard
   if (isAuthenticated) {
-    navigate('/'); // Redirect to homepage or dashboard
+    return <Navigate to="/" replace />;
   }
 
   return (

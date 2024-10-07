@@ -13,3 +13,6 @@ They are very specific on how to change their button color, components pallete, 
 Due to the way React Router is set up, the pages are "routes" and you should look it `src/routes` first, then follow the component chain. For example, if I want to work on the home page, I open `src/routes/root.tsx` then continue from there.
 Note: the reusable layout of all pages (like how the nav bar is present in all pages), is in `src/Layout.tsx`
 I will try to explain via comments as much as possible, but most of the things in main.tsx is how the libraries required stuff to be written, a wrapped around b, etc.
+
+## Redux
+The `app` and `features` folders are for Redux files. Don't know why they name it like that in their documentation, I just follow it.

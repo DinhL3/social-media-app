@@ -13,6 +13,9 @@ import Root from './routes/root.tsx';
 import About from './routes/about.tsx';
 import Layout from './Layout.tsx';
 
+import store from './app/store';  // Your Redux store
+import { Provider } from 'react-redux';  // Import the Redux Provider
+
 // This way is of setting up react-router-dom is based on the official documentation of v6.26.2
 
 const router = createBrowserRouter([
@@ -34,6 +37,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    {/* Wrap your entire app with the Redux Provider and pass the store */}
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </StrictMode>,
 );

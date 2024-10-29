@@ -32,13 +32,34 @@ export const loginUser = createAsyncThunk(
       );
       return response.data; // Expect message: 'Logged in successfully'
     } catch (error) {
-      // Handle error messages returned from backend
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(
           error.response.data.error || 'Login failed',
         );
       }
       return thunkAPI.rejectWithValue('Login failed');
+    }
+  },
+);
+
+// Async thunk for user registration
+export const registerUser = createAsyncThunk(
+  'auth/registerUser',
+  async (credentials: { username: string; password: string }, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/register',
+        credentials,
+      );
+      // Automatically log in the user upon successful registration
+      return response.data; // Return data to be handled in `extraReducers`
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(
+          error.response.data.message || 'Registration failed',
+        );
+      }
+      return thunkAPI.rejectWithValue('Registration failed');
     }
   },
 );
@@ -54,6 +75,7 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Handle login
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -64,6 +86,21 @@ export const authSlice = createSlice({
         localStorage.setItem('isAuthenticated', 'true'); // Save state to localStorage
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Handle register
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.loading = false;
+        state.isAuthenticated = true; // Log in the user automatically
+        localStorage.setItem('isAuthenticated', 'true'); // Save state to localStorage
+      })
+      .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

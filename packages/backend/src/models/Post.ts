@@ -1,4 +1,3 @@
-// models/Post.ts
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface IPost extends Document {

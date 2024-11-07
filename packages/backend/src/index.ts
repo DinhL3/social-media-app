@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
+import postRoutes from './routes/postRoutes';
 import cookieParser from 'cookie-parser';
 import cors from 'cors'; // Import CORS
 import morgan from 'morgan'; // Import Morgan
@@ -37,6 +38,7 @@ app.use(cookieParser()); // For parsing cookies
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/posts', postRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World from Express with TypeScript!');

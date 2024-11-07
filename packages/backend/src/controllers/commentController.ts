@@ -1,8 +1,8 @@
-import { Request, Response, RequestHandler } from 'express';
+import { Request, Response } from 'express';
 import Comment from '../models/Comment';
 import Post from '../models/Post';
 
-export const addComment: RequestHandler = async (req: Request, res: Response) => {
+export const addComment = async (req: Request, res: Response) => {
   const { postId } = req.params;
   const { author, content } = req.body;
 

@@ -1,4 +1,4 @@
-import { Request, Response, RequestHandler } from 'express';
+import { Request, Response } from 'express';
 import Post from '../models/Post';
 
 export const createPost = async (req: Request, res: Response) => {

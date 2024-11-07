@@ -2,11 +2,16 @@ import { Request, Response } from 'express';
 import Post from '../models/Post';
 
 export const createPost = async (req: Request, res: Response) => {
-  const { author, content, visibility } = req.body;
+  const { content, visibility, userId } = req.body;
+  console.log('Received userId in controller:', userId);
+
+  if (!userId) {
+    res.status(401).json({ error: 'Unauthorized' }); // If userId is not present, return Unauthorized
+  }
 
   try {
     const newPost = new Post({
-      author,
+      author: userId,  // Use userId from req.body instead of req.user
       content,
       date: new Date(),
       visibility,

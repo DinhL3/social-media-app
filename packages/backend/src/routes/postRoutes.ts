@@ -4,8 +4,8 @@ import { addComment } from '../controllers/commentController';
 
 const router = express.Router();
 
-router.post('/posts', createPost);           // Create a new post
-router.get('/posts', getAllPosts);           // Get all posts
-router.post('/posts/:postId/comments', addComment);  // Add comment to a post
+router.post('/newPost', createPost);           // Create a new post
+router.get('/', getAllPosts);           // Get all posts
+router.post('/:postId/comments', addComment);  // Add comment to a post
 
 export default router;

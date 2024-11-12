@@ -9,6 +9,7 @@ interface Post {
   author: { username: string };
   content: string;
   date: string;
+  comments: { _id: string }[];
 }
 
 const Root: React.FC = () => {
@@ -51,6 +52,7 @@ const Root: React.FC = () => {
               author={post.author.username}
               content={post.content}
               date={post.date}
+              commentsCount={post.comments.length}
             />
           ))}
       </Container>

@@ -10,10 +10,8 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as { userId: string }; // Decode token and expect userId
-    console.log('Decoded token:', decoded);
 
     req.body.userId = decoded.userId;  // Attach userId to req.body
-    console.log('userId added to req.body:', req.body.userId);
 
     next(); // Call next() to proceed to the next middleware or controller
   } catch (error) {

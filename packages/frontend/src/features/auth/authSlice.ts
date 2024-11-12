@@ -71,6 +71,7 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.isAuthenticated = false;
       localStorage.removeItem('isAuthenticated'); // Remove the state from localStorage
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; // Remove JWT token from cookies
     },
   },
   extraReducers: (builder) => {

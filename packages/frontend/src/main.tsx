@@ -17,6 +17,7 @@ import store from './app/store'; // Your Redux store
 import { Provider } from 'react-redux'; // Import the Redux Provider
 import Login from './routes/login.tsx';
 import Register from './routes/register.tsx';
+import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
 
 // This way is of setting up react-router-dom is based on the official documentation of v6.26.2
 
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
   {
     path: '/', // Base path for the layout
     element: <Layout />, // Use Layout as the element
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/',

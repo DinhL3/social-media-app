@@ -18,6 +18,7 @@ import { Provider } from 'react-redux'; // Import the Redux Provider
 import Login from './routes/login.tsx';
 import Register from './routes/register.tsx';
 import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
+import CreateNewPost from './routes/create-new-post.tsx';
 
 // This way is of setting up react-router-dom is based on the official documentation of v6.26.2
 
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: 'register',
         element: <Register />,
+      },
+      {
+        path: 'create-new-post',
+        element: <CreateNewPost />,
       },
     ],
   },

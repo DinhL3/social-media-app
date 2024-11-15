@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography } from '@mui/material';
+import { Button, Container, Divider, Stack, Typography } from '@mui/material';
+import { Create as CreateIcon } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
+
 import axios from 'axios';
-import CreatePost from '../components/postComponents/CreatePost';
-import PostCard from '../components/postComponents/PostCard';
+import PostCard from '../components/PostCard/PostCard';
+import { centerContainerStyles } from '../styles';
 
 interface Post {
   _id: string;
@@ -30,31 +33,59 @@ const Root: React.FC = () => {
 
   return (
     <>
-      <Container maxWidth="md">
-        <Typography variant="h3" sx={{ mt: 3 }} gutterBottom>
-          Welcome to our social media app
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          Let's meet new friends and chat!
-        </Typography>
+      <Container maxWidth="sm" sx={centerContainerStyles}>
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{ flexWrap: 'wrap', justifyContent: 'center' }}
+        >
+          <Typography variant="h4">Welcome!</Typography>
+          <Typography variant="h4">(„• ֊ •„)੭</Typography>
+        </Stack>
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+            mt: 2,
+          }}
+        >
+          <Typography variant="body1">Share what's on your mind?</Typography>
+          <Button
+            id="create-new-post-button"
+            variant="contained"
+            startIcon={<CreateIcon />}
+            color="primary"
+            component={Link}
+            to={`/create-new-post`}
+          >
+            New Post
+          </Button>
+        </Stack>
 
-        {/* Create Post Input Field */}
-        <CreatePost />
-
+        <Divider textAlign="center" sx={{ width: '100%', mt: 2 }}>
+          <Typography variant="caption" component="span" color="text.disabled">
+            Your feed
+          </Typography>
+        </Divider>
         {/* Display Posts */}
-        {posts
-          .sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-          ) // Sort by date in descending order (newest first) this will be changed later
-          .map((post) => (
-            <PostCard
-              key={post._id}
-              author={post.author.username}
-              content={post.content}
-              date={post.date}
-              commentsCount={post.comments.length}
-            />
-          ))}
+        <Stack direction="column" gap={2} sx={{ mt: 3 }}>
+          {posts
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+            ) // Sort by date in descending order (newest first) this will be changed later
+            .map((post) => (
+              <PostCard
+                key={post._id}
+                author={post.author.username}
+                content={post.content}
+                date={post.date}
+                commentCount={post.comments.length}
+              />
+            ))}
+        </Stack>
       </Container>
     </>
   );

@@ -217,7 +217,7 @@ function ResponsiveAppBar() {
   );
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: 'tealDark.main' }}>
       {loggedOut && <Navigate to="/" replace />} {/* Redirect after logout */}
       <Container maxWidth="xl">
         <Toolbar disableGutters>

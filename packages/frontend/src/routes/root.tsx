@@ -38,6 +38,7 @@ const Root: React.FC = () => {
           spacing={2}
           direction="row"
           sx={{ flexWrap: 'wrap', justifyContent: 'center' }}
+          color="#e29578"
         >
           <Typography variant="h4">Welcome!</Typography>
           <Typography variant="h4">(„• ֊ •„)੭</Typography>
@@ -57,7 +58,7 @@ const Root: React.FC = () => {
             id="create-new-post-button"
             variant="contained"
             startIcon={<CreateIcon />}
-            color="primary"
+            color="tealDark"
             component={Link}
             to={`/create-new-post`}
           >

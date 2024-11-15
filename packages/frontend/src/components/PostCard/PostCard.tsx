@@ -36,8 +36,8 @@ export default function PostCard({
     <Card>
       <CardActionArea>
         <CardContent>
-          <Stack direction="row" gap={1}>
-            <Typography variant="subtitle2" color="text.secondary">
+          <Stack direction="row" gap={1} alignItems="center">
+            <Typography variant="subtitle1" color="tealDark.main">
               @{author}
             </Typography>
             <Typography variant="subtitle2" color="text.secondary">

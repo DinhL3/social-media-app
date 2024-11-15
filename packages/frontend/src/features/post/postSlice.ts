@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { delay } from '../../utils';
 
 interface Post {
   _id: string;
@@ -67,6 +68,7 @@ export const fetchAllPosts = createAsyncThunk(
   'posts/fetchAllPosts',
   async (_, thunkAPI) => {
     try {
+      await delay(3000);
       const response = await axios.get('http://localhost:5000/api/posts/', {
         withCredentials: true,
       });

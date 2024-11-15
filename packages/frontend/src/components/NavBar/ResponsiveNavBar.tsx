@@ -195,9 +195,24 @@ function ResponsiveAppBar() {
 
   const renderLoginMenu = () => (
     <Tooltip title="Login">
-      <IconButton component={Link} to="/login" color="inherit">
-        <LoginIcon />
-      </IconButton>
+      <Button
+        component={Link}
+        to="/login"
+        color="inherit"
+        startIcon={<LoginIcon />}
+        sx={{
+          display: { xs: 'flex', md: 'inline-flex' },
+          fontSize: { xs: 0, md: 'inherit' },
+        }}
+        size="large"
+      >
+        <Typography
+          variant="button"
+          sx={{ display: { xs: 'none', md: 'block' } }}
+        >
+          Login
+        </Typography>
+      </Button>
     </Tooltip>
   );
 

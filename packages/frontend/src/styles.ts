@@ -7,3 +7,11 @@ export const modalBoxStyle = {
   bgcolor: 'background.paper',
   p: 4,
 };
+
+export const centerContainerStyles = {
+  mt: 2,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+};

@@ -22,7 +22,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { RootState } from '../../app/store';
 import { logout } from '../../features/auth/authSlice'; // Import the logout action
 
-const pages = ['Home', 'Discover', 'About'];
+const pages = ['Home', 'Chat', 'About'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -195,14 +195,29 @@ function ResponsiveAppBar() {
 
   const renderLoginMenu = () => (
     <Tooltip title="Login">
-      <IconButton component={Link} to="/login" color="inherit">
-        <LoginIcon />
-      </IconButton>
+      <Button
+        component={Link}
+        to="/login"
+        color="inherit"
+        startIcon={<LoginIcon />}
+        sx={{
+          display: { xs: 'flex', md: 'inline-flex' },
+          fontSize: { xs: 0, md: 'inherit' },
+        }}
+        size="large"
+      >
+        <Typography
+          variant="button"
+          sx={{ display: { xs: 'none', md: 'block' } }}
+        >
+          Login
+        </Typography>
+      </Button>
     </Tooltip>
   );
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: 'tealDark.main' }}>
       {loggedOut && <Navigate to="/" replace />} {/* Redirect after logout */}
       <Container maxWidth="xl">
         <Toolbar disableGutters>

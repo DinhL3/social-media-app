@@ -1,6 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles'; // Import ThemeProvider
+import CssBaseline from '@mui/material/CssBaseline'; // Import CssBaseline for global styles
+import theme from './theme'; // Import your custom theme
 
 import './index.css';
 
@@ -12,18 +15,18 @@ import '@fontsource/roboto/700.css';
 import Root from './routes/root.tsx';
 import About from './routes/about.tsx';
 import Layout from './Layout.tsx';
-
 import store from './app/store'; // Your Redux store
 import { Provider } from 'react-redux'; // Import the Redux Provider
 import Login from './routes/login.tsx';
 import Register from './routes/register.tsx';
-
-// This way is of setting up react-router-dom is based on the official documentation of v6.26.2
+import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
+import CreateNewPost from './routes/create-new-post.tsx';
 
 const router = createBrowserRouter([
   {
-    path: '/', // Base path for the layout
-    element: <Layout />, // Use Layout as the element
+    path: '/',
+    element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/',
@@ -41,15 +44,22 @@ const router = createBrowserRouter([
         path: 'register',
         element: <Register />,
       },
+      {
+        path: 'create-new-post',
+        element: <CreateNewPost />,
+      },
     ],
   },
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {/* Wrap your entire app with the Redux Provider and pass the store */}
     <Provider store={store}>
-      <RouterProvider router={router} />
+      {/* Apply the theme to your app */}
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </Provider>
   </StrictMode>,
 );

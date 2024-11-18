@@ -59,7 +59,7 @@ export default function Login() {
         <Stack direction="column" spacing={2}>
           <TextField
             label="Username"
-            variant="filled"
+            variant="outlined"
             name="username"
             value={form.username}
             onChange={handleChange}
@@ -69,7 +69,7 @@ export default function Login() {
           <TextField
             label="Password"
             type="password"
-            variant="filled"
+            variant="outlined"
             name="password"
             value={form.password}
             onChange={handleChange}
@@ -85,6 +85,7 @@ export default function Login() {
               form.password.trim() === ''
             }
             fullWidth
+            color="tealDark"
           >
             {loading ? 'Logging in...' : 'Log in'}
           </Button>

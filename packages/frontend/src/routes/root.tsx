@@ -7,9 +7,10 @@ import {
   Typography,
   CircularProgress,
   Alert,
+  Link as MaterialLink,
 } from '@mui/material';
 import { Create as CreateIcon } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import PostCard from '../components/PostCard/PostCard';
@@ -20,10 +21,11 @@ import { fetchAllPosts } from '../features/post/postSlice'; // Import the fetchA
 const Root: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // Select posts, loading, and error state from Redux
+  // Select posts, loading, error, and authentication state from Redux
   const { posts, loading, error } = useSelector(
     (state: RootState) => state.posts,
   );
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     // Dispatch the fetchAllPosts thunk when the component mounts
@@ -42,28 +44,43 @@ const Root: React.FC = () => {
           <Typography variant="h4">Welcome!</Typography>
           <Typography variant="h4">(„• ֊ •„)੭</Typography>
         </Stack>
-        <Stack
-          spacing={2}
-          direction="row"
-          sx={{
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            alignItems: 'center',
-            mt: 2,
-          }}
-        >
-          <Typography variant="body1">Share what's on your mind?</Typography>
-          <Button
-            id="create-new-post-button"
-            variant="contained"
-            startIcon={<CreateIcon />}
-            color="tealDark"
-            component={Link}
-            to={`/create-new-post`}
+
+        {!isAuthenticated ? (
+          <Typography variant="body1" sx={{ mt: 2, textAlign: 'center' }}>
+            Please{' '}
+            <MaterialLink component={RouterLink} to="/login">
+              log in
+            </MaterialLink>{' '}
+            or{' '}
+            <MaterialLink component={RouterLink} to="/register">
+              register
+            </MaterialLink>{' '}
+            to create a new post.
+          </Typography>
+        ) : (
+          <Stack
+            spacing={2}
+            direction="row"
+            sx={{
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mt: 2,
+            }}
           >
-            New Post
-          </Button>
-        </Stack>
+            <Typography variant="body1">Share what's on your mind?</Typography>
+            <Button
+              id="create-new-post-button"
+              variant="contained"
+              startIcon={<CreateIcon />}
+              color="tealDark"
+              component={RouterLink}
+              to={`/create-new-post`}
+            >
+              New Post
+            </Button>
+          </Stack>
+        )}
 
         <Divider textAlign="center" sx={{ width: '100%', mt: 2 }}>
           <Typography variant="caption" component="span" color="text.disabled">
@@ -95,6 +112,7 @@ const Root: React.FC = () => {
         {/* Display posts */}
         <Stack direction="column" gap={2} sx={{ mt: 3 }}>
           {posts
+            .slice() // Create a shallow copy to avoid mutating the original state
             .sort(
               (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
             ) // Sort by date in descending order (newest first)

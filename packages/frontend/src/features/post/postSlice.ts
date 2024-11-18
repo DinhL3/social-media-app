@@ -68,7 +68,6 @@ export const fetchAllPosts = createAsyncThunk(
   'posts/fetchAllPosts',
   async (_, thunkAPI) => {
     try {
-      await delay(3000);
       const response = await axios.get('http://localhost:5000/api/posts/', {
         withCredentials: true,
       });
@@ -122,7 +121,7 @@ const postSlice = createSlice({
       })
       .addCase(createPost.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts.unshift(action.payload); // Add the new post to the beginning
+        state.posts.unshift(action.payload);
       })
       .addCase(createPost.rejected, (state, action) => {
         state.loading = false;

@@ -59,7 +59,7 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: '1h',
     });
 
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie('token', token, { httpOnly: false, secure: true, sameSite: 'lax' });
     res.json({ message: 'Logged in successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Login failed' });

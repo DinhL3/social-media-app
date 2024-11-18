@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles'; // Import ThemeProvider
 import CssBaseline from '@mui/material/CssBaseline'; // Import CssBaseline for global styles
 import theme from './theme'; // Import your custom theme
@@ -21,6 +21,7 @@ import Login from './routes/login.tsx';
 import Register from './routes/register.tsx';
 import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
 import CreateNewPost from './routes/create-new-post.tsx';
+import ChatPage from './routes/chat-page.tsx';
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: 'create-new-post',
         element: <CreateNewPost />,
+      },
+      {
+        path: 'chat',
+        element: <ChatPage />,
       },
     ],
   },

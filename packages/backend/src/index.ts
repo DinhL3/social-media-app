@@ -7,6 +7,9 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors'; // Import CORS
 import morgan from 'morgan'; // Import Morgan
 import friendController from './controllers/friendController';
+import { setupWebSocket } from './websocket/Chat';
+import http from 'http';
+import messageController from './controllers/messageController';
 
 dotenv.config();
 // .env file should be in /packages/backend/
@@ -41,11 +44,17 @@ app.use(cookieParser()); // For parsing cookies
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/friends', friendController);
+app.use('/api/messages', messageController);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World from Express with TypeScript!');
 });
 
-app.listen(port, () => {
+// Create HTTP server and set up WebSocket
+const httpServer = http.createServer(app);
+setupWebSocket(httpServer); // Call the WebSocket setup
+
+// Start the server
+httpServer.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });

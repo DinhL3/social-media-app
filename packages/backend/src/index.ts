@@ -6,6 +6,7 @@ import postRoutes from './routes/postRoutes';
 import cookieParser from 'cookie-parser';
 import cors from 'cors'; // Import CORS
 import morgan from 'morgan'; // Import Morgan
+import friendController from './controllers/friendController';
 
 dotenv.config();
 // .env file should be in /packages/backend/
@@ -39,6 +40,7 @@ app.use(cookieParser()); // For parsing cookies
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/friends', friendController);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World from Express with TypeScript!');

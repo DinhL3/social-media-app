@@ -82,7 +82,7 @@ export default function Register() {
         <Stack direction="column" spacing={2}>
           <TextField
             label="Username"
-            variant="filled"
+            variant="outlined"
             name="username"
             value={form.username}
             onChange={handleChange}
@@ -92,7 +92,7 @@ export default function Register() {
           <TextField
             label="Password"
             type="password"
-            variant="filled"
+            variant="outlined"
             name="password"
             value={form.password}
             onChange={handleChange}
@@ -110,6 +110,7 @@ export default function Register() {
               passwordError !== '' // Disable if password is invalid
             }
             fullWidth
+            color="tealDark"
           >
             {loading ? 'Registering...' : 'Register'}
           </Button>

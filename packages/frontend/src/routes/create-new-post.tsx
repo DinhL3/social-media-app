@@ -22,17 +22,36 @@ export default function CreateNewPost() {
   // Get loading state from Redux store
   const { loading } = useSelector((state: RootState) => state.posts);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const newValue = e.target.value;
-    if (newValue.length <= 300) {
+    const lineBreaks = newValue.split('\n').length;
+
+    // Allow input and pasting, but enforce the character and line break limits
+    if (lineBreaks <= 10 && newValue.length <= 300) {
       setContent(newValue);
+    } else {
+      // If pasted content exceeds the conditions, trim it to fit within the limits
+      const trimmedValue = newValue
+        .split('\n')
+        .slice(0, 10) // Limit to 10 lines
+        .join('\n')
+        .slice(0, 300); // Limit to 300 characters
+      setContent(trimmedValue);
     }
   };
 
   const handlePostClick = async (e: FormEvent) => {
     e.preventDefault();
     if (content.trim().length > 0 && content.trim().length <= 300) {
-      await dispatch(createPost({ content, visibility: 'public' }));
+      await dispatch(
+        createPost({
+          content,
+          visibility: 'public',
+          userId: '',
+        }),
+      );
       setRedirect(true);
     }
   };
@@ -50,8 +69,8 @@ export default function CreateNewPost() {
       <TextField
         id="standard-multiline-flexible"
         multiline
-        maxRows={4}
-        variant="standard"
+        minRows={5}
+        variant="outlined"
         fullWidth
         placeholder="What's up?"
         value={content}

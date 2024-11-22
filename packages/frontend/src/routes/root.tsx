@@ -119,10 +119,12 @@ const Root: React.FC = () => {
             .map((post) => (
               <PostCard
                 key={post._id}
+                postId={post._id}
                 author={post.author.username}
                 content={post.content}
                 date={post.date}
                 commentCount={post.comments.length}
+                isClickable={true}
               />
             ))}
         </Stack>

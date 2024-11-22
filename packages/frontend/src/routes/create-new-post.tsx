@@ -77,7 +77,7 @@ export default function CreateNewPost() {
         onChange={handleChange}
         helperText={`${300 - content.length} characters remaining`}
       />
-      <Stack direction="row" justifyContent="center" sx={{ mt: 4 }}>
+      <Stack direction="row" justifyContent="center" sx={{ mt: 2 }}>
         <Button
           variant="contained"
           startIcon={loading ? <CircularProgress size={20} /> : <SendIcon />}

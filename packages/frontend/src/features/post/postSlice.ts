@@ -108,6 +108,29 @@ export const addComment = createAsyncThunk(
   },
 );
 
+// Async thunk for fetching a post by ID
+export const fetchPostById = createAsyncThunk(
+  'posts/fetchPostById',
+  async (postId: string, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/posts/${postId}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(
+          error.response.data.error || 'Error fetching post by ID',
+        );
+      }
+      return thunkAPI.rejectWithValue('Error fetching post by ID');
+    }
+  },
+);
+
 const postSlice = createSlice({
   name: 'posts',
   initialState,
@@ -154,10 +177,34 @@ const postSlice = createSlice({
         const { postId, comment } = action.payload;
         const post = state.posts.find((p) => p._id === postId);
         if (post) {
-          post.comments.push(comment); // Add the comment to the specified post
+          post.comments.push(comment);
         }
       })
       .addCase(addComment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Handle fetchPostById
+    builder
+      .addCase(fetchPostById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPostById.fulfilled, (state, action) => {
+        state.loading = false;
+        // Here, you could handle the fetched post, for example, by replacing or appending it to the posts array.
+        const fetchedPost = action.payload;
+        const existingPostIndex = state.posts.findIndex(
+          (p) => p._id === fetchedPost._id,
+        );
+        if (existingPostIndex >= 0) {
+          state.posts[existingPostIndex] = fetchedPost;
+        } else {
+          state.posts.push(fetchedPost);
+        }
+      })
+      .addCase(fetchPostById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

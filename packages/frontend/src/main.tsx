@@ -22,6 +22,7 @@ import Register from './routes/register.tsx';
 import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
 import CreateNewPost from './routes/create-new-post.tsx';
 import ChatPage from './routes/chat-page.tsx';
+import PostDetails from './routes/post-details.tsx';
 
 const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
       {
         path: 'chat',
         element: <ChatPage />,
+      },
+      {
+        path: 'post-details/:postId',
+        element: <PostDetails />,
       },
     ],
   },

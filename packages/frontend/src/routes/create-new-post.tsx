@@ -1,3 +1,6 @@
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 import {
   Button,
   CircularProgress,
@@ -7,12 +10,10 @@ import {
   Typography,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { centerContainerStyles } from '../styles';
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
 import { AppDispatch, RootState } from '../app/store';
-import { createPost } from '../features/post/postSlice'; // Import createPost thunk
-import { Navigate } from 'react-router-dom';
+import { createPost } from '../features/post/postSlice';
+import { centerContainerStyles } from '../styles';
 
 export default function CreateNewPost() {
   const [content, setContent] = useState('');
@@ -67,7 +68,7 @@ export default function CreateNewPost() {
         Create a new post
       </Typography>
       <TextField
-        id="standard-multiline-flexible"
+        id="post-content-inpuit"
         multiline
         minRows={5}
         variant="outlined"

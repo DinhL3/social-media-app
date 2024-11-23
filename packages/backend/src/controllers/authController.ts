@@ -37,7 +37,11 @@ export const register = async (req: Request, res: Response) => {
     });
 
     // Set the token as a cookie and send a response
-    res.cookie('token', token, { httpOnly: false, secure: true, sameSite: 'lax' });
+    res.cookie('token', token, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'lax',
+    });
     res.status(201).json({ message: 'User registered and logged in', token });
   } catch (error) {
     res.status(500).json({ error: 'Error registering user' });
@@ -73,9 +77,38 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: '1h',
     });
 
-    res.cookie('token', token, { httpOnly: false, secure: true, sameSite: 'lax' });
+    res.cookie('token', token, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'lax',
+    });
     res.json({ message: 'Logged in successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Login failed' });
+  }
+};
+
+export const getUserDetails = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const userId = req.body.userId; // Extracted from authenticateToken middleware
+
+  if (!userId) {
+    res.status(401).json({ error: 'Unauthorized' }); // Send response if userId is missing
+    return; // Ensure the function does not continue execution
+  }
+
+  try {
+    const user = await User.findById(userId, 'username'); // Fetch only the username
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return; // Stop further execution
+    }
+
+    res.status(200).json({ username: user.username }); // Send successful response
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    res.status(500).json({ error: 'Failed to fetch user details' });
   }
 };

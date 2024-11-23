@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   AppBar,
@@ -11,6 +11,7 @@ import {
   Tooltip,
   MenuItem,
   Button,
+  CircularProgress,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -19,8 +20,8 @@ import {
   Login as LoginIcon,
 } from '@mui/icons-material';
 import { Link, Navigate } from 'react-router-dom';
-import { RootState } from '../../app/store';
-import { logout } from '../../features/auth/authSlice'; // Import the logout action
+import { RootState, AppDispatch } from '../../app/store';
+import { fetchUserDetails, logout } from '../../features/auth/authSlice';
 
 const pages = ['Home', 'Chat', 'About'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -29,12 +30,20 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [loggedOut, setLoggedOut] = useState(false); // State to trigger redirection after logout
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // Get the authentication state from Redux
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated,
-  );
+  // Get authentication and user details from Redux state
+  const {
+    isAuthenticated,
+    username,
+    loading: authLoading,
+  } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated && !username) {
+      dispatch(fetchUserDetails());
+    }
+  }, [dispatch, isAuthenticated, username]);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -53,9 +62,9 @@ function ResponsiveAppBar() {
   };
 
   const handleLogout = () => {
-    dispatch(logout()); // Dispatch the logout action
-    setLoggedOut(true); // Set the state to trigger redirection
-    handleCloseUserMenu(); // Close the user menu
+    dispatch(logout());
+    setLoggedOut(true);
+    handleCloseUserMenu();
   };
 
   // Mobile Menu Function
@@ -161,9 +170,34 @@ function ResponsiveAppBar() {
   const renderUserMenu = () => (
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open user menu">
-        <IconButton color="inherit" onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <AccountCircleIcon sx={{ fontSize: 32 }} />
-        </IconButton>
+        {authLoading ? (
+          <CircularProgress size={32} sx={{ color: 'white' }} />
+        ) : (
+          <>
+            {/* Desktop User Menu */}
+            <Button
+              sx={{
+                display: { xs: 'none', md: 'inline-flex' },
+                color: 'white',
+                fontSize: '1rem',
+                textTransform: 'lowercase',
+              }}
+              onClick={handleOpenUserMenu}
+              endIcon={<AccountCircleIcon />}
+            >
+              @{username}
+            </Button>
+
+            {/* Mobile User Menu */}
+            <IconButton
+              color="inherit"
+              onClick={handleOpenUserMenu}
+              sx={{ display: { xs: 'flex', md: 'none' } }}
+            >
+              <AccountCircleIcon />
+            </IconButton>
+          </>
+        )}
       </Tooltip>
       <Menu
         sx={{ mt: '45px' }}

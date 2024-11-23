@@ -55,7 +55,7 @@ export default function PostCard({
 
       <Typography
         variant="body1"
-        sx={{ mt: 1 }} // Adjust font size
+        sx={{ mt: 1, whiteSpace: 'pre-line' }} // Adjust font size
         gutterBottom
       >
         {content}

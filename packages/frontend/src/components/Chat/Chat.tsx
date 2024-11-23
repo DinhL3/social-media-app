@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { Box, Typography, List, ListItem, CircularProgress, TextField, IconButton } from '@mui/material';
+import { Box, Typography, List, ListItem, CircularProgress, TextField, IconButton, useMediaQuery } from '@mui/material';
 import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
 import SendIcon from '@mui/icons-material/Send';
@@ -23,6 +23,8 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<{ senderId: string; message: string }[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
   const [socket, setSocket] = useState<Socket | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const isMobile = useMediaQuery('(max-width:900px)');
 
   useEffect(() => {
     const token = Cookies.get('token');
@@ -144,6 +146,10 @@ const Chat: React.FC = () => {
     }
   }, [activeChat, markMessagesAsRead]);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   if (loading) {
     return (
       <Box
@@ -162,9 +168,10 @@ const Chat: React.FC = () => {
   return (
     <Box sx={{ display: 'flex', height: 'calc(100% - 70px)', width: '100%', position: 'absolute', top: 70, left: 0 }}>
       {/* Friend List */}
+      {(!isMobile || !activeChat) && (
       <Box
         sx={{
-          width: '25%',
+          minWidth: isMobile ? '100%' : '25%',
           backgroundColor: '#f8f9fa',
           borderRight: '1px solid #ddd',
           overflowY: 'auto',
@@ -194,14 +201,16 @@ const Chat: React.FC = () => {
           )}
         </List>
       </Box>
-
+      )}
       {/* Chat Section */}
+      {(isMobile && activeChat) || !isMobile ? (
       <Box
         sx={{
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
           height: '100%',
+          minWidth: '75%',
         }}
       >
         {!activeChat ? (
@@ -252,7 +261,10 @@ const Chat: React.FC = () => {
                         color: isUserMessage ? 'black' : 'white',
                         padding: 1,
                         borderRadius: 2,
-                        maxWidth: '70%',
+                        maxWidth: '50%',
+                        wordWrap: 'break-word',
+                        whiteSpace: 'pre-wrap',
+                        overflowWrap: 'break-word',
                       }}
                     >
                       {msg.message}
@@ -260,6 +272,7 @@ const Chat: React.FC = () => {
                   </Box>
                 );
               })}
+              <div ref={messagesEndRef} />
             </Box>
 
             <Box
@@ -290,6 +303,7 @@ const Chat: React.FC = () => {
           </>
         )}
       </Box>
+      ) : null }
     </Box>
   );
 };

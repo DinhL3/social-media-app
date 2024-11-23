@@ -15,16 +15,30 @@ export const register = async (req: Request, res: Response) => {
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       res.status(400).json({ message: 'This username already exists' });
-    } else {
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create and save the new user
-      const newUser = new User({ username, password: hashedPassword });
-      await newUser.save();
-
-      res.status(201).json({ message: 'User registered' });
+      return;
     }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create and save the new user
+    const newUser = new User({ username, password: hashedPassword });
+    await newUser.save();
+
+    // Generate JWT token
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      res.status(500).json({ error: 'Server configuration error' });
+      return;
+    }
+
+    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    // Set the token as a cookie and send a response
+    res.cookie('token', token, { httpOnly: false, secure: true, sameSite: 'lax' });
+    res.status(201).json({ message: 'User registered and logged in', token });
   } catch (error) {
     res.status(500).json({ error: 'Error registering user' });
   }

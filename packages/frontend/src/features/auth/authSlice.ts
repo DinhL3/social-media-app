@@ -55,6 +55,9 @@ export const registerUser = createAsyncThunk(
       const response = await axios.post(
         'http://localhost:5000/api/auth/register',
         credentials,
+        {
+          withCredentials: true,
+        },
       );
       // Automatically log in the user upon successful registration
       return response.data; // Return data to be handled in `extraReducers`

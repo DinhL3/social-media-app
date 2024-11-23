@@ -286,10 +286,11 @@ const Chat: React.FC = () => {
               <TextField
                 fullWidth
                 variant="outlined"
+                multiline
                 value={newMessage}
                 onChange={handleMessageChange}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleSendMessage();
                   }

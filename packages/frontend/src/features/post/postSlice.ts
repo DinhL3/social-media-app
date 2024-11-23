@@ -93,10 +93,10 @@ export const addComment = createAsyncThunk(
     try {
       const response = await axios.post(
         `http://localhost:5000/api/posts/${postId}/comments`,
-        { content },
+        { content }, // Only send content; `userId` will be inferred from the backend token
         { withCredentials: true },
       );
-      return { postId, comment: response.data };
+      return { postId, comment: response.data }; // Return the new comment and postId
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(
@@ -177,7 +177,7 @@ const postSlice = createSlice({
         const { postId, comment } = action.payload;
         const post = state.posts.find((p) => p._id === postId);
         if (post) {
-          post.comments.push(comment);
+          post.comments.push(comment); // Add the new comment to the post
         }
       })
       .addCase(addComment.rejected, (state, action) => {

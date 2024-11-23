@@ -1,4 +1,4 @@
-import { Card, Stack, Tooltip, Typography } from '@mui/material';
+import { Card, CardContent, Stack, Tooltip, Typography } from '@mui/material';
 import { format, formatDistanceToNow } from 'date-fns';
 
 interface CommentCardProps {
@@ -23,23 +23,25 @@ export default function CommentCard({
 
   return (
     <Card variant="outlined">
-      <Stack direction="row" gap={1} alignItems="center">
-        <Typography variant="subtitle1" color="tealDark.main">
-          @{author}
-        </Typography>
-        <Typography variant="subtitle2" color="text.secondary">
-          ·
-        </Typography>
-        <Tooltip title={formattedDate}>
-          <Typography variant="subtitle2" color="text.secondary">
-            {relativeTime}
+      <CardContent>
+        <Stack direction="row" gap={1} alignItems="center">
+          <Typography variant="subtitle1" color="tealDark.main">
+            @{author}
           </Typography>
-        </Tooltip>
-      </Stack>
+          <Typography variant="subtitle2" color="text.secondary">
+            ·
+          </Typography>
+          <Tooltip title={formattedDate}>
+            <Typography variant="subtitle2" color="text.secondary">
+              {relativeTime}
+            </Typography>
+          </Tooltip>
+        </Stack>
 
-      <Typography variant="body1" sx={{ mt: 1 }} gutterBottom>
-        {content}
-      </Typography>
+        <Typography variant="body1" sx={{ mt: 1 }}>
+          {content}
+        </Typography>
+      </CardContent>
     </Card>
   );
 }

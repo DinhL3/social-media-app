@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post('/newPost', authenticateToken, createPost); // Create a new post
 router.get('/', getAllPosts); // Get all posts
-router.post('/:postId/comments', addComment); // Add comment to a post
+router.post('/:postId/comments', authenticateToken, addComment); // Add comment to a post
 router.get('/:postId', getPostById); // Get post by ID
 
 export default router;

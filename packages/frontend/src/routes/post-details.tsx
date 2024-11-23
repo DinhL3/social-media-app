@@ -7,6 +7,7 @@ import {
   Stack,
   TextField,
   IconButton,
+  Divider,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useParams } from 'react-router-dom';
@@ -53,9 +54,9 @@ export default function PostDetails() {
   // Handle sending a comment
   const handleSendCommentClick = async (e: FormEvent) => {
     e.preventDefault();
-    if (content.trim() && postId) {
-      await dispatch(addComment({ postId, content }));
-      setContent(''); // Clear the input field after submission
+    if (content.trim().length > 0) {
+      await dispatch(addComment({ postId: postId!, content })); // Pass postId and content
+      setContent(''); // Clear input
     }
   };
 
@@ -68,10 +69,9 @@ export default function PostDetails() {
 
   return (
     <Container maxWidth="sm" sx={centerContainerStyles}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="subtitle1" color="text.disabled" gutterBottom>
         Post details
       </Typography>
-
       {/* Display loading spinner */}
       {loading && (
         <CircularProgress
@@ -102,7 +102,7 @@ export default function PostDetails() {
             content={post.content}
             date={post.date}
             commentCount={post.comments.length}
-            isClickable={false}
+            isInRootFeed={false}
           />
 
           {/* Add a comment */}
@@ -137,7 +137,7 @@ export default function PostDetails() {
           </Stack>
 
           {/* Display comments */}
-          <Stack direction="column" sx={{ mt: 2 }} gap={1}>
+          <Stack direction="column" sx={{ mt: 2, width: '100%' }} gap={1}>
             {post?.comments
               .slice()
               .sort(

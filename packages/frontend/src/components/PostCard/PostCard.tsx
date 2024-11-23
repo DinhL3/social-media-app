@@ -17,7 +17,7 @@ interface PostCardProps {
   content: string;
   date: string; // Ensure this is an ISO string or date-compatible format
   commentCount: number;
-  isClickable?: boolean; // Optional prop to determine if the card should be clickable
+  isInRootFeed?: boolean; // Optional prop to determine if the post is in the root feed
 }
 
 export default function PostCard({
@@ -26,7 +26,7 @@ export default function PostCard({
   content,
   date,
   commentCount,
-  isClickable = true, // Default to clickable
+  isInRootFeed = true,
 }: PostCardProps) {
   // Convert the date to a Date object
   const postDate = new Date(date);
@@ -53,7 +53,11 @@ export default function PostCard({
         </Tooltip>
       </Stack>
 
-      <Typography variant="body1" sx={{ mt: 1 }} gutterBottom>
+      <Typography
+        variant="body1"
+        sx={{ mt: 1 }} // Adjust font size
+        gutterBottom
+      >
         {content}
       </Typography>
       <Stack direction="row" justifyContent="flex-end">
@@ -66,8 +70,12 @@ export default function PostCard({
   );
 
   return (
-    <Card>
-      {isClickable ? (
+    <Card
+      sx={{
+        width: '100%',
+      }}
+    >
+      {isInRootFeed ? (
         <CardActionArea component={Link} to={`/post-details/${postId}`}>
           {cardContent}
         </CardActionArea>

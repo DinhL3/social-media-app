@@ -9,6 +9,7 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   token: string | null;
+  username: string | null;
 }
 
 // Get the initial state from localStorage
@@ -20,6 +21,7 @@ const getInitialAuthState = (): AuthState => {
     loading: false,
     error: null,
     token: isAuthenticated ? token : null,
+    username: null,
   };
 };
 
@@ -72,6 +74,26 @@ export const registerUser = createAsyncThunk(
   },
 );
 
+// Fetch user details
+export const fetchUserDetails = createAsyncThunk(
+  'auth/fetchUserDetails',
+  async (_, thunkAPI) => {
+    const token = Cookies.get('token');
+    if (!token || isTokenExpired(token)) {
+      thunkAPI.rejectWithValue('Token expired or invalid');
+      return;
+    }
+    try {
+      const response = await axios.get('http://localhost:5000/api/auth/me', {
+        withCredentials: true,
+      });
+      return response.data.username;
+    } catch (error) {
+      return thunkAPI.rejectWithValue('Failed to fetch user details');
+    }
+  },
+);
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState: getInitialAuthState(), // Use the initial state from localStorage
@@ -79,7 +101,8 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.isAuthenticated = false;
       localStorage.removeItem('isAuthenticated'); // Remove the state from localStorage
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; // Remove JWT token from cookies
+      document.cookie =
+        'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; // Remove JWT token from cookies
     },
   },
   extraReducers: (builder) => {
@@ -110,6 +133,21 @@ export const authSlice = createSlice({
         localStorage.setItem('isAuthenticated', 'true'); // Save state to localStorage
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      //Handle fetch user details
+      .addCase(fetchUserDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.username = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(fetchUserDetails.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

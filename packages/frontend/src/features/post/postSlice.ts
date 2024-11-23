@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { delay } from '../../utils';
 
 interface Post {
   _id: string;

@@ -1,20 +1,25 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import Cookies from 'js-cookie';
+import { isTokenExpired } from './tokenUtils';
 
 // Define a type for the slice state
 interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  token: string | null;
 }
 
 // Get the initial state from localStorage
 const getInitialAuthState = (): AuthState => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const token = Cookies.get('token');
+  const isAuthenticated = !!token && !isTokenExpired(token);
   return {
     isAuthenticated,
     loading: false,
     error: null,
+    token: isAuthenticated ? token : null,
   };
 };
 

@@ -124,7 +124,7 @@ const Root: React.FC = () => {
                 content={post.content}
                 date={post.date}
                 commentCount={post.comments.length}
-                isClickable={true}
+                isInRootFeed={true}
               />
             ))}
         </Stack>

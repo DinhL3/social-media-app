@@ -26,7 +26,6 @@ import { RootState, AppDispatch } from '../../app/store';
 import { fetchUserDetails, logout } from '../../features/auth/authSlice';
 
 const pages = ['Home', 'Chat', 'About'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function useIsMobile(): boolean {
   const theme = useTheme();
@@ -191,23 +190,17 @@ function ResponsiveAppBar() {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {settings.map((setting) => (
-          <MenuItem
-            key={setting}
-            onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}
+        <MenuItem onClick={handleCloseUserMenu}>
+          <Link
+            to={`/profile/${username}`}
+            style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            {setting === 'Profile' ? (
-              <Link
-                to={`/profile/${username}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <Typography textAlign="center">{setting}</Typography>
-              </Link>
-            ) : (
-              <Typography textAlign="center">{setting}</Typography>
-            )}
-          </MenuItem>
-        ))}
+            <Typography textAlign="center">Profile</Typography>
+          </Link>
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <Typography textAlign="center">Logout</Typography>
+        </MenuItem>
       </Menu>
     );
 

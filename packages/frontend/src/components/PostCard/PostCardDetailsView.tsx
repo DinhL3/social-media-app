@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   Box,
   Card,
-  CardActionArea,
   CardContent,
   CardHeader,
   IconButton,
@@ -16,7 +15,6 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { format, formatDistanceToNow } from 'date-fns';
-import { Link } from 'react-router-dom';
 
 interface PostCardProps {
   postId: string;
@@ -24,16 +22,13 @@ interface PostCardProps {
   content: string;
   date: string; // Ensure this is an ISO string or date-compatible format
   commentCount: number;
-  isInRootFeed?: boolean; // Optional prop to determine if the post is in the root feed
 }
 
-export default function PostCard({
-  postId,
+export default function PostCardDetailsView({
   author,
   content,
   date,
   commentCount,
-  isInRootFeed = true,
 }: PostCardProps) {
   const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null);
   const handleOpenEditMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -72,25 +67,23 @@ export default function PostCard({
           </Tooltip>
         }
         action={
-          !isInRootFeed && (
-            <>
-              <IconButton onClick={handleOpenEditMenu}>
-                <MoreHorizIcon />
-              </IconButton>
-              <Menu
-                id="edit-menu"
-                anchorEl={anchorElEdit}
-                open={Boolean(anchorElEdit)}
-                onClose={handleCloseEditMenu}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button',
-                }}
-              >
-                <MenuItem onClick={handleCloseEditMenu}>Edit</MenuItem>
-                <MenuItem onClick={handleCloseEditMenu}>Delete</MenuItem>
-              </Menu>
-            </>
-          )
+          <>
+            <IconButton onClick={handleOpenEditMenu}>
+              <MoreHorizIcon />
+            </IconButton>
+            <Menu
+              id="edit-menu"
+              anchorEl={anchorElEdit}
+              open={Boolean(anchorElEdit)}
+              onClose={handleCloseEditMenu}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
+              }}
+            >
+              <MenuItem onClick={handleCloseEditMenu}>Edit</MenuItem>
+              <MenuItem onClick={handleCloseEditMenu}>Delete</MenuItem>
+            </Menu>
+          </>
         }
       />
       <CardContent sx={{ pt: 1 }}>
@@ -98,8 +91,8 @@ export default function PostCard({
           variant="body1"
           sx={{
             whiteSpace: 'pre-line',
-            fontSize: isInRootFeed ? undefined : '1.2rem',
-            lineHeight: isInRootFeed ? undefined : 1.5,
+            fontSize: '1.2rem',
+            lineHeight: 1.5,
           }}
           gutterBottom
         >
@@ -121,13 +114,7 @@ export default function PostCard({
         width: '100%',
       }}
     >
-      {isInRootFeed ? (
-        <CardActionArea component={Link} to={`/post-details/${postId}`}>
-          {cardContent}
-        </CardActionArea>
-      ) : (
-        cardContent
-      )}
+      {cardContent}
     </Card>
   );
 }

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography, Stack } from '@mui/material';
-import PostCard from '../components/PostCard/PostCard';
+import PostCardFeedView from '../components/PostCard/PostCardFeedView';
 
 interface ProfileData {
   username: string;
@@ -94,14 +94,13 @@ export default function Profile() {
           {userPosts.length > 0 ? (
             <Stack spacing={2}>
               {userPosts.map((post) => (
-                <PostCard
+                <PostCardFeedView
                   key={post._id}
                   postId={post._id}
                   author={post.author.username}
                   content={post.content}
                   date={post.date}
                   commentCount={post.comments.length}
-                  isInRootFeed={false}
                 />
               ))}
             </Stack>

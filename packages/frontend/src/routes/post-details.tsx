@@ -7,17 +7,16 @@ import {
   Stack,
   TextField,
   IconButton,
-  Divider,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { centerContainerStyles } from '../styles';
-import PostCard from '../components/PostCard/PostCard';
 import { fetchPostById, addComment } from '../features/post/postSlice'; // Import addComment
 import { AppDispatch, RootState } from '../app/store';
 import CommentCard from '../components/CommentCard/CommentCard';
+import PostCardDetailsView from '../components/PostCard/PostCardDetailsView';
 
 export default function PostDetails() {
   const { postId } = useParams<{ postId: string }>();
@@ -96,13 +95,12 @@ export default function PostDetails() {
       {/* Display post details */}
       {!loading && !error && post && (
         <>
-          <PostCard
+          <PostCardDetailsView
             postId={post._id}
             author={post.author.username}
             content={post.content}
             date={post.date}
             commentCount={post.comments.length}
-            isInRootFeed={false}
           />
 
           {/* Add a comment */}

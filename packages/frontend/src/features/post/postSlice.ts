@@ -130,6 +130,60 @@ export const fetchPostById = createAsyncThunk(
   },
 );
 
+export const updatePost = createAsyncThunk(
+  'posts/updatePost',
+  async (
+    {
+      postId,
+      content,
+      visibility,
+      userId,
+    }: {
+      postId: string;
+      content: string;
+      visibility: 'friends' | 'public';
+      userId: string;
+    },
+    thunkAPI,
+  ) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/posts/${postId}`,
+        { content, visibility, userId },
+        { withCredentials: true },
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(
+          error.response.data.error || 'Error updating post',
+        );
+      }
+      return thunkAPI.rejectWithValue('Error updating post');
+    }
+  },
+);
+
+export const deletePost = createAsyncThunk(
+  'posts/deletePost',
+  async ({ postId, userId }: { postId: string; userId: string }, thunkAPI) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/posts/${postId}`, {
+        data: { userId },
+        withCredentials: true,
+      });
+      return postId; // Return postId to remove it from state
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(
+          error.response.data.error || 'Error deleting post',
+        );
+      }
+      return thunkAPI.rejectWithValue('Error deleting post');
+    }
+  },
+);
+
 const postSlice = createSlice({
   name: 'posts',
   initialState,
@@ -204,6 +258,42 @@ const postSlice = createSlice({
         }
       })
       .addCase(fetchPostById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Handle updatePost
+    builder
+      .addCase(updatePost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePost.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedPost = action.payload;
+        const index = state.posts.findIndex(
+          (post) => post._id === updatedPost._id,
+        );
+        if (index !== -1) {
+          state.posts[index] = updatedPost;
+        }
+      })
+      .addCase(updatePost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Handle deletePost
+    builder
+      .addCase(deletePost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.posts = state.posts.filter((post) => post._id !== action.payload);
+      })
+      .addCase(deletePost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

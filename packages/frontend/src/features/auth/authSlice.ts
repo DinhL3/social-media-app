@@ -10,6 +10,7 @@ interface AuthState {
   error: string | null;
   token: string | null;
   username: string | null;
+  userId: string | null; // Add userId to state
 }
 
 // Get the initial state from localStorage
@@ -22,6 +23,7 @@ const getInitialAuthState = (): AuthState => {
     error: null,
     token: isAuthenticated ? token : null,
     username: null,
+    userId: null, // Add userId to initial state
   };
 };
 
@@ -87,7 +89,10 @@ export const fetchUserDetails = createAsyncThunk(
       const response = await axios.get('http://localhost:5000/api/auth/me', {
         withCredentials: true,
       });
-      return response.data.username;
+      return {
+        username: response.data.username,
+        userId: response.data._id, // Assuming backend sends _id
+      };
     } catch (error) {
       return thunkAPI.rejectWithValue('Failed to fetch user details');
     }
@@ -144,8 +149,11 @@ export const authSlice = createSlice({
       })
       .addCase(fetchUserDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.username = action.payload;
-        state.isAuthenticated = true;
+        if (action.payload) {
+          state.username = action.payload.username;
+          state.userId = action.payload.userId; // Store userId in state
+          state.isAuthenticated = true;
+        }
       })
       .addCase(fetchUserDetails.rejected, (state, action) => {
         state.loading = false;

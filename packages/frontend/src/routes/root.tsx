@@ -13,10 +13,10 @@ import { Create as CreateIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import PostCard from '../components/PostCard/PostCard';
 import { centerContainerStyles } from '../styles';
 import { AppDispatch, RootState } from '../app/store'; // Import RootState and AppDispatch types
 import { fetchAllPosts } from '../features/post/postSlice'; // Import the fetchAllPosts thunk
+import PostCardFeedView from '../components/PostCard/PostCardFeedView';
 
 const Root: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -117,14 +117,13 @@ const Root: React.FC = () => {
               (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
             ) // Sort by date in descending order (newest first)
             .map((post) => (
-              <PostCard
+              <PostCardFeedView
                 key={post._id}
                 postId={post._id}
                 author={post.author.username}
                 content={post.content}
                 date={post.date}
                 commentCount={post.comments.length}
-                isInRootFeed={true}
               />
             ))}
         </Stack>

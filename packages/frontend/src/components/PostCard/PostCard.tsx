@@ -1,13 +1,20 @@
+import { useState } from 'react';
 import {
   Box,
   Card,
   CardActionArea,
   CardContent,
+  CardHeader,
+  IconButton,
+  Menu,
+  MenuItem,
   Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 
@@ -28,6 +35,14 @@ export default function PostCard({
   commentCount,
   isInRootFeed = true,
 }: PostCardProps) {
+  const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null);
+  const handleOpenEditMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElEdit(event.currentTarget);
+  };
+  const handleCloseEditMenu = () => {
+    setAnchorElEdit(null);
+  };
+
   // Convert the date to a Date object
   const postDate = new Date(date);
 
@@ -38,35 +53,66 @@ export default function PostCard({
   const relativeTime = formatDistanceToNow(postDate, { addSuffix: true });
 
   const cardContent = (
-    <CardContent>
-      <Stack direction="row" gap={1} alignItems="center">
-        <Typography variant="subtitle1" color="tealDark.main">
-          @{author}
-        </Typography>
-        <Typography variant="subtitle2" color="text.secondary">
-          ·
-        </Typography>
-        <Tooltip title={formattedDate}>
-          <Typography variant="subtitle2" color="text.secondary">
-            {relativeTime}
+    <>
+      <CardHeader
+        sx={{ pb: 0 }}
+        avatar={
+          <AccountCircleIcon sx={{ fontSize: 48, color: 'peach.main' }} />
+        }
+        title={
+          <Typography variant="subtitle1" color="tealDark.main">
+            @{author}
           </Typography>
-        </Tooltip>
-      </Stack>
-
-      <Typography
-        variant="body1"
-        sx={{ mt: 1, whiteSpace: 'pre-line' }} // Adjust font size
-        gutterBottom
-      >
-        {content}
-      </Typography>
-      <Stack direction="row" justifyContent="flex-end">
-        <Box display="flex" gap={1} color="text.secondary">
-          <ChatBubbleOutlineOutlinedIcon fontSize="small" />
-          <Typography variant="caption">{commentCount}</Typography>
-        </Box>
-      </Stack>
-    </CardContent>
+        }
+        subheader={
+          <Tooltip title={formattedDate}>
+            <Typography variant="subtitle2" color="text.secondary">
+              {relativeTime}
+            </Typography>
+          </Tooltip>
+        }
+        action={
+          !isInRootFeed && (
+            <>
+              <IconButton onClick={handleOpenEditMenu}>
+                <MoreHorizIcon />
+              </IconButton>
+              <Menu
+                id="edit-menu"
+                anchorEl={anchorElEdit}
+                open={Boolean(anchorElEdit)}
+                onClose={handleCloseEditMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem onClick={handleCloseEditMenu}>Edit</MenuItem>
+                <MenuItem onClick={handleCloseEditMenu}>Delete</MenuItem>
+              </Menu>
+            </>
+          )
+        }
+      />
+      <CardContent sx={{ pt: 1 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            whiteSpace: 'pre-line',
+            fontSize: isInRootFeed ? undefined : '1.2rem',
+            lineHeight: isInRootFeed ? undefined : 1.5,
+          }}
+          gutterBottom
+        >
+          {content}
+        </Typography>
+        <Stack direction="row" justifyContent="flex-end">
+          <Box display="flex" gap={1} color="text.secondary">
+            <ChatBubbleOutlineOutlinedIcon fontSize="small" />
+            <Typography variant="caption">{commentCount}</Typography>
+          </Box>
+        </Stack>
+      </CardContent>
+    </>
   );
 
   return (

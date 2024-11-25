@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Post from '../models/Post';
+import Comment from '../models/Comment';
 
 export const createPost = async (req: Request, res: Response) => {
   const { content, visibility, userId } = req.body;
@@ -58,5 +59,64 @@ export const getPostById = async (req: Request, res: Response) => {
     res.status(200).json(post);
   } catch (error) {
     res.status(500).json({ error: 'Error retrieving the post' });
+  }
+};
+
+export const updatePost = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const { content, visibility, userId } = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      res.status(404).json({ error: 'Post not found' });
+      return;
+    }
+
+    if (post.author.toString() !== userId) {
+      res.status(403).json({ error: 'Not authorized to edit this post' });
+      return;
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { content, visibility },
+      { new: true },
+    ).populate('author', 'username');
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    res.status(500).json({ error: 'Error updating post' });
+  }
+};
+
+export const deletePost = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const { userId } = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      res.status(404).json({ error: 'Post not found' });
+      return;
+    }
+
+    if (post.author.toString() !== userId) {
+      res.status(403).json({ error: 'Not authorized to delete this post' });
+      return;
+    }
+
+    // Delete all comments associated with the post
+    await Comment.deleteMany({ post: postId });
+
+    // Delete the post
+    await Post.findByIdAndDelete(postId);
+    res
+      .status(200)
+      .json({ message: 'Post and associated comments deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error deleting post and comments' });
   }
 };

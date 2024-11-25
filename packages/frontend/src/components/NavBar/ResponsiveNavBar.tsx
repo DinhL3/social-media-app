@@ -196,16 +196,7 @@ function ResponsiveAppBar() {
             key={setting}
             onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}
           >
-            {setting === 'Profile' ? (
-              <Link
-                to={`/profile/${username}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <Typography textAlign="center">{setting}</Typography>
-              </Link>
-            ) : (
-              <Typography textAlign="center">{setting}</Typography>
-            )}
+            <Typography textAlign="center">{setting}</Typography>
           </MenuItem>
         ))}
       </Menu>
@@ -247,18 +238,30 @@ function ResponsiveAppBar() {
     );
   };
 
-  const renderLoginMenu = () => (
-    <Tooltip title="Login">
-      <Button
-        component={Link}
-        to="/login"
-        color="inherit"
-        startIcon={<LoginIcon />}
-      >
-        Login
-      </Button>
-    </Tooltip>
-  );
+  const renderLoginMenu = () => {
+    const mobileLoginMenu = (
+      <Tooltip title="Login">
+        <IconButton component={Link} to="/login" color="inherit">
+          <LoginIcon />
+        </IconButton>
+      </Tooltip>
+    );
+
+    const desktopLoginMenu = (
+      <Tooltip title="Login">
+        <Button
+          component={Link}
+          to="/login"
+          color="inherit"
+          startIcon={<LoginIcon />}
+        >
+          Login
+        </Button>
+      </Tooltip>
+    );
+
+    return isMobile ? mobileLoginMenu : desktopLoginMenu;
+  };
 
   return (
     <AppBar position="static" sx={{ backgroundColor: 'tealDark.main' }}>

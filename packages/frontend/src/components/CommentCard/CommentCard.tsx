@@ -1,4 +1,11 @@
-import { Card, CardContent, Stack, Tooltip, Typography } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { format, formatDistanceToNow } from 'date-fns';
 
 interface CommentCardProps {
@@ -23,24 +30,26 @@ export default function CommentCard({
 
   return (
     <Card variant="outlined">
-      <CardContent>
-        <Stack direction="row" gap={1} alignItems="center">
+      <CardHeader
+        sx={{ pb: 0 }}
+        avatar={
+          <AccountCircleIcon sx={{ fontSize: 48, color: 'peach.main' }} />
+        }
+        title={
           <Typography variant="subtitle1" color="tealDark.main">
             @{author}
           </Typography>
-          <Typography variant="subtitle2" color="text.secondary">
-            ·
-          </Typography>
+        }
+        subheader={
           <Tooltip title={formattedDate}>
             <Typography variant="subtitle2" color="text.secondary">
               {relativeTime}
             </Typography>
           </Tooltip>
-        </Stack>
-
-        <Typography variant="body1" sx={{ mt: 1 }}>
-          {content}
-        </Typography>
+        }
+      />
+      <CardContent sx={{ pt: 1 }}>
+        <Typography variant="body1">{content}</Typography>
       </CardContent>
     </Card>
   );

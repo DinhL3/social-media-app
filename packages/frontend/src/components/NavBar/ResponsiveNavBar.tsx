@@ -196,7 +196,16 @@ function ResponsiveAppBar() {
             key={setting}
             onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}
           >
-            <Typography textAlign="center">{setting}</Typography>
+            {setting === 'Profile' ? (
+              <Link
+                to={`/profile/${username}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <Typography textAlign="center">{setting}</Typography>
+              </Link>
+            ) : (
+              <Typography textAlign="center">{setting}</Typography>
+            )}
           </MenuItem>
         ))}
       </Menu>

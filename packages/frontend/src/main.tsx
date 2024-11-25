@@ -23,6 +23,7 @@ import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
 import CreateNewPost from './routes/create-new-post.tsx';
 import ChatPage from './routes/chat-page.tsx';
 import PostDetails from './routes/post-details.tsx';
+import Profile from './routes/profile.tsx';
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
         path: 'post-details/:postId',
         element: <PostDetails />,
       },
+      {
+        path: 'profile/:username',
+        element: <Profile />
+      }
     ],
   },
 ]);

@@ -10,6 +10,8 @@ import friendController from './controllers/friendController';
 import { setupWebSocket } from './websocket/Chat';
 import http from 'http';
 import messageController from './controllers/messageController';
+import userProfileController from './controllers/userProfileController';
+import { authenticateToken } from './middleware/authMiddleware';
 
 dotenv.config();
 // .env file should be in /packages/backend/
@@ -45,6 +47,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/friends', friendController);
 app.use('/api/messages', messageController);
+app.use('/api/profile', userProfileController, authenticateToken);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World from Express with TypeScript!');

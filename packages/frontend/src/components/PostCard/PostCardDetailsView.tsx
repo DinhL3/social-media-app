@@ -1,30 +1,14 @@
-import { useState } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Stack, Typography } from '@mui/material';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { format, formatDistanceToNow } from 'date-fns';
-import YouChip from '../shared/YouChip';
-import TimeDisplay from '../shared/TimeDisplay';
+import PostHeader from '../shared/PostHeader';
 
 interface PostCardProps {
   postId: string;
   author: string;
-  authorId: string; // Add this
-  loggedInUserId: string | null; // Add this
+  authorId: string;
+  loggedInUserId: string | null;
   content: string;
-  date: string; // Ensure this is an ISO string or date-compatible format
+  date: string;
   commentCount: number;
 }
 
@@ -36,54 +20,20 @@ export default function PostCardDetailsView({
   date,
   commentCount,
 }: PostCardProps) {
-  const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null);
-  const handleOpenEditMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElEdit(event.currentTarget);
-  };
-  const handleCloseEditMenu = () => {
-    setAnchorElEdit(null);
-  };
-
-  // Add this check
   const isPostOwner = loggedInUserId === authorId;
 
   const cardContent = (
     <>
-      <CardHeader
-        sx={{ pb: 0 }}
-        avatar={
-          <AccountCircleIcon sx={{ fontSize: 48, color: 'peach.main' }} />
-        }
-        title={
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="subtitle1" color="tealDark.main">
-              @{author}
-            </Typography>
-            {isPostOwner && <YouChip />}
-          </Stack>
-        }
-        subheader={<TimeDisplay date={date} />}
-        action={
-          isPostOwner ? ( // Only show edit menu if user owns the post
-            <>
-              <IconButton onClick={handleOpenEditMenu}>
-                <MoreHorizIcon />
-              </IconButton>
-              <Menu
-                id="edit-menu"
-                anchorEl={anchorElEdit}
-                open={Boolean(anchorElEdit)}
-                onClose={handleCloseEditMenu}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button',
-                }}
-              >
-                <MenuItem onClick={handleCloseEditMenu}>Edit</MenuItem>
-                <MenuItem onClick={handleCloseEditMenu}>Delete</MenuItem>
-              </Menu>
-            </>
-          ) : null
-        }
+      <PostHeader
+        author={author}
+        date={date}
+        isOwner={isPostOwner}
+        onEdit={() => {
+          /* handle edit */
+        }}
+        onDelete={() => {
+          /* handle delete */
+        }}
       />
       <CardContent sx={{ pt: 1 }}>
         <Typography

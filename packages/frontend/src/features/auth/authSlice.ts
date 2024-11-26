@@ -13,21 +13,28 @@ interface AuthState {
   userId: string | null; // Add userId to state
 }
 
+// Add interface for user data
+interface UserData {
+  username: string;
+  _id: string;
+}
+
 // Get the initial state from localStorage
 const getInitialAuthState = (): AuthState => {
   const token = Cookies.get('token');
+  const storedUserId = localStorage.getItem('userId');
   const isAuthenticated = !!token && !isTokenExpired(token);
   return {
     isAuthenticated,
     loading: false,
     error: null,
     token: isAuthenticated ? token : null,
-    username: null,
-    userId: null, // Add userId to initial state
+    username: localStorage.getItem('username'),
+    userId: isAuthenticated ? storedUserId : null,
   };
 };
 
-// Async thunk for user login
+// Modify loginUser thunk to also return user details
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (credentials: { username: string; password: string }, thunkAPI) => {
@@ -39,7 +46,17 @@ export const loginUser = createAsyncThunk(
           withCredentials: true, // Include the cookie in the response
         },
       );
-      return response.data; // Expect message: 'Logged in successfully'
+      // Fetch user details immediately after successful login
+      const userResponse = await axios.get(
+        'http://localhost:5000/api/auth/me',
+        {
+          withCredentials: true,
+        },
+      );
+      return {
+        message: response.data.message,
+        user: userResponse.data,
+      };
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(
@@ -51,7 +68,7 @@ export const loginUser = createAsyncThunk(
   },
 );
 
-// Async thunk for user registration
+// Modify registerUser to match loginUser pattern
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
   async (credentials: { username: string; password: string }, thunkAPI) => {
@@ -59,12 +76,21 @@ export const registerUser = createAsyncThunk(
       const response = await axios.post(
         'http://localhost:5000/api/auth/register',
         credentials,
+        { withCredentials: true },
+      );
+
+      // Fetch user details after successful registration
+      const userResponse = await axios.get(
+        'http://localhost:5000/api/auth/me',
         {
           withCredentials: true,
         },
       );
-      // Automatically log in the user upon successful registration
-      return response.data; // Return data to be handled in `extraReducers`
+
+      return {
+        message: response.data.message,
+        user: userResponse.data,
+      };
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(
@@ -76,14 +102,13 @@ export const registerUser = createAsyncThunk(
   },
 );
 
-// Fetch user details
+// Modify fetchUserDetails to properly handle token issues
 export const fetchUserDetails = createAsyncThunk(
   'auth/fetchUserDetails',
   async (_, thunkAPI) => {
     const token = Cookies.get('token');
     if (!token || isTokenExpired(token)) {
-      thunkAPI.rejectWithValue('Token expired or invalid');
-      return;
+      return thunkAPI.rejectWithValue('Token expired or invalid');
     }
     try {
       const response = await axios.get('http://localhost:5000/api/auth/me', {
@@ -99,13 +124,27 @@ export const fetchUserDetails = createAsyncThunk(
   },
 );
 
+// Helper function to update auth state
+const updateAuthState = (state: AuthState, userData: UserData) => {
+  state.username = userData.username;
+  state.userId = userData._id;
+  state.isAuthenticated = true;
+  localStorage.setItem('username', userData.username);
+  localStorage.setItem('userId', userData._id);
+  localStorage.setItem('isAuthenticated', 'true');
+};
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState: getInitialAuthState(), // Use the initial state from localStorage
   reducers: {
     logout: (state) => {
       state.isAuthenticated = false;
+      state.userId = null;
+      state.username = null;
       localStorage.removeItem('isAuthenticated'); // Remove the state from localStorage
+      localStorage.removeItem('userId');
+      localStorage.removeItem('username');
       document.cookie =
         'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; // Remove JWT token from cookies
     },
@@ -117,25 +156,27 @@ export const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state) => {
+      .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
-        localStorage.setItem('isAuthenticated', 'true'); // Save state to localStorage
+        if (action.payload.user) {
+          updateAuthState(state, action.payload.user);
+        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
 
-      // Handle register
+      // Handle register - now matches login pattern
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true; // Log in the user automatically
-        localStorage.setItem('isAuthenticated', 'true'); // Save state to localStorage
+        if (action.payload.user) {
+          updateAuthState(state, action.payload.user);
+        }
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -150,9 +191,10 @@ export const authSlice = createSlice({
       .addCase(fetchUserDetails.fulfilled, (state, action) => {
         state.loading = false;
         if (action.payload) {
-          state.username = action.payload.username;
-          state.userId = action.payload.userId; // Store userId in state
-          state.isAuthenticated = true;
+          updateAuthState(state, {
+            username: action.payload.username,
+            _id: action.payload.userId,
+          });
         }
       })
       .addCase(fetchUserDetails.rejected, (state, action) => {

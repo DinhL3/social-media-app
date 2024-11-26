@@ -25,7 +25,9 @@ const Root: React.FC = () => {
   const { posts, loading, error } = useSelector(
     (state: RootState) => state.posts,
   );
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, userId: loggedInUserId } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   useEffect(() => {
     // Dispatch the fetchAllPosts thunk when the component mounts
@@ -121,6 +123,8 @@ const Root: React.FC = () => {
                 key={post._id}
                 postId={post._id}
                 author={post.author.username}
+                authorId={post.author._id} // Add this
+                loggedInUserId={loggedInUserId} // Add this
                 content={post.content}
                 date={post.date}
                 commentCount={post.comments.length}

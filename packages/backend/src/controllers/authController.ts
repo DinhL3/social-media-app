@@ -36,13 +36,19 @@ export const register = async (req: Request, res: Response) => {
       expiresIn: '1h',
     });
 
-    // Set the token as a cookie and send a response
+    // Set the token as a cookie and send a response with user data
     res.cookie('token', token, {
       httpOnly: false,
       secure: true,
       sameSite: 'lax',
     });
-    res.status(201).json({ message: 'User registered and logged in', token });
+    res.status(201).json({
+      message: 'User registered and logged in',
+      user: {
+        username: newUser.username,
+        _id: newUser._id,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error registering user' });
   }
@@ -82,7 +88,13 @@ export const login = async (req: Request, res: Response) => {
       secure: true,
       sameSite: 'lax',
     });
-    res.json({ message: 'Logged in successfully' });
+    res.json({
+      message: 'Logged in successfully',
+      user: {
+        username: user.username,
+        _id: user._id,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: 'Login failed' });
   }
@@ -100,13 +112,16 @@ export const getUserDetails = async (
   }
 
   try {
-    const user = await User.findById(userId, 'username'); // Fetch only the username
+    const user = await User.findById(userId, 'username _id'); // Add _id to projection
     if (!user) {
       res.status(404).json({ error: 'User not found' });
       return; // Stop further execution
     }
 
-    res.status(200).json({ username: user.username }); // Send successful response
+    res.status(200).json({
+      username: user.username,
+      _id: user._id, // Include the _id in response
+    });
   } catch (error) {
     console.error('Error fetching user details:', error);
     res.status(500).json({ error: 'Failed to fetch user details' });

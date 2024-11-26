@@ -1,51 +1,93 @@
+import { useState } from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
   Tooltip,
   Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Chip,
+  Stack, // Add this import
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { format, formatDistanceToNow } from 'date-fns';
+import YouChip from '../shared/YouChip';
+import TimeDisplay from '../shared/TimeDisplay';
 
 interface CommentCardProps {
   commentId: string;
   author: string;
+  authorId: string; // Add this
+  loggedInUserId: string | null; // Add this
   content: string;
   date: string;
 }
 
 export default function CommentCard({
   author,
+  authorId,
+  loggedInUserId,
   content,
   date,
 }: CommentCardProps) {
-  const postDate = new Date(date);
+  const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null);
+  const handleOpenEditMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElEdit(event.currentTarget);
+  };
+  const handleCloseEditMenu = () => {
+    setAnchorElEdit(null);
+  };
 
-  // Format the date for the tooltip (e.g., "November 16, at 7:30pm")
-  const formattedDate = format(postDate, "MMMM d, 'at' h:mma");
-
-  // Calculate the relative time for display (e.g., "39m ago")
-  const relativeTime = formatDistanceToNow(postDate, { addSuffix: true });
+  // Check if the logged-in user is the comment author
+  const isCommentOwner = loggedInUserId === authorId;
 
   return (
-    <Card variant="outlined">
+    <Card
+      variant="outlined"
+      sx={{ borderColor: isCommentOwner ? 'tealLight.main' : undefined }}
+    >
       <CardHeader
         sx={{ pb: 0 }}
         avatar={
-          <AccountCircleIcon sx={{ fontSize: 48, color: 'peach.main' }} />
+          <AccountCircleIcon
+            sx={{
+              fontSize: 48,
+              color: 'peach.main',
+            }}
+          />
         }
         title={
-          <Typography variant="subtitle1" color="tealDark.main">
-            @{author}
-          </Typography>
-        }
-        subheader={
-          <Tooltip title={formattedDate}>
-            <Typography variant="subtitle2" color="text.secondary">
-              {relativeTime}
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography variant="subtitle1" color="tealDark.main">
+              @{author}
             </Typography>
-          </Tooltip>
+            {isCommentOwner && <YouChip />}
+          </Stack>
+        }
+        subheader={<TimeDisplay date={date} />}
+        action={
+          isCommentOwner ? (
+            <>
+              <IconButton onClick={handleOpenEditMenu}>
+                <MoreHorizIcon />
+              </IconButton>
+              <Menu
+                id="comment-edit-menu"
+                anchorEl={anchorElEdit}
+                open={Boolean(anchorElEdit)}
+                onClose={handleCloseEditMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem onClick={handleCloseEditMenu}>Edit</MenuItem>
+                <MenuItem onClick={handleCloseEditMenu}>Delete</MenuItem>
+              </Menu>
+            </>
+          ) : null
         }
       />
       <CardContent sx={{ pt: 1 }}>

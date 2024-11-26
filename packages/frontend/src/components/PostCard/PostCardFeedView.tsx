@@ -10,8 +10,9 @@ import {
 } from '@mui/material';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
+import YouChip from '../shared/YouChip';
+import TimeDisplay from '../shared/TimeDisplay';
 
 interface PostCardFeedViewProps {
   postId: string;
@@ -19,6 +20,8 @@ interface PostCardFeedViewProps {
   content: string;
   date: string; // Ensure this is an ISO string or date-compatible format
   commentCount: number;
+  authorId: string;
+  loggedInUserId: string | null;
 }
 
 export default function PostCardFeedView({
@@ -27,12 +30,10 @@ export default function PostCardFeedView({
   content,
   date,
   commentCount,
+  authorId,
+  loggedInUserId,
 }: PostCardFeedViewProps) {
-  const postDate = new Date(date);
-  const formattedDate = format(postDate, "MMMM d, 'at' h:mma");
-
-  // Calculate the relative time for display (e.g., "39m ago")
-  const relativeTime = formatDistanceToNow(postDate, { addSuffix: true });
+  const isPostOwner = loggedInUserId === authorId;
 
   const cardContent = (
     <>
@@ -42,17 +43,14 @@ export default function PostCardFeedView({
           <AccountCircleIcon sx={{ fontSize: 48, color: 'peach.main' }} />
         }
         title={
-          <Typography variant="subtitle1" color="tealDark.main">
-            @{author}
-          </Typography>
-        }
-        subheader={
-          <Tooltip title={formattedDate}>
-            <Typography variant="subtitle2" color="text.secondary">
-              {relativeTime}
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography variant="subtitle1" color="tealDark.main">
+              @{author}
             </Typography>
-          </Tooltip>
+            {isPostOwner && <YouChip />}
+          </Stack>
         }
+        subheader={<TimeDisplay date={date} />}
       />
       <CardContent sx={{ pt: 1 }}>
         <Typography

@@ -20,6 +20,7 @@ interface PostHeaderProps {
   onEdit?: () => void;
   onDelete?: () => void;
   showActions?: boolean;
+  handleDelete?: () => void; // Add handleDelete prop
 }
 
 export default function PostHeader({
@@ -29,6 +30,7 @@ export default function PostHeader({
   onEdit,
   onDelete,
   showActions = true,
+  handleDelete, // Add handleDelete prop
 }: PostHeaderProps) {
   const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null);
 
@@ -45,9 +47,9 @@ export default function PostHeader({
     onEdit?.();
   };
 
-  const handleDelete = () => {
+  const handleDeleteClick = () => {
     handleCloseEditMenu();
-    onDelete?.();
+    handleDelete?.();
   };
 
   return (
@@ -81,7 +83,7 @@ export default function PostHeader({
               onClose={handleCloseEditMenu}
             >
               <MenuItem onClick={handleEdit}>Edit</MenuItem>
-              <MenuItem onClick={handleDelete}>Delete</MenuItem>
+              <MenuItem onClick={handleDeleteClick}>Delete</MenuItem>
             </Menu>
           </>
         ) : null

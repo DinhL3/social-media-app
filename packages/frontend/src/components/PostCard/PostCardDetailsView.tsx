@@ -15,10 +15,13 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { format, formatDistanceToNow } from 'date-fns';
+import YouChip from '../shared/YouChip';
 
 interface PostCardProps {
   postId: string;
   author: string;
+  authorId: string; // Add this
+  loggedInUserId: string | null; // Add this
   content: string;
   date: string; // Ensure this is an ISO string or date-compatible format
   commentCount: number;
@@ -26,6 +29,8 @@ interface PostCardProps {
 
 export default function PostCardDetailsView({
   author,
+  authorId,
+  loggedInUserId,
   content,
   date,
   commentCount,
@@ -47,6 +52,9 @@ export default function PostCardDetailsView({
   // Calculate the relative time for display (e.g., "39m ago")
   const relativeTime = formatDistanceToNow(postDate, { addSuffix: true });
 
+  // Add this check
+  const isPostOwner = loggedInUserId === authorId;
+
   const cardContent = (
     <>
       <CardHeader
@@ -55,9 +63,12 @@ export default function PostCardDetailsView({
           <AccountCircleIcon sx={{ fontSize: 48, color: 'peach.main' }} />
         }
         title={
-          <Typography variant="subtitle1" color="tealDark.main">
-            @{author}
-          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography variant="subtitle1" color="tealDark.main">
+              @{author}
+            </Typography>
+            {isPostOwner && <YouChip />}
+          </Stack>
         }
         subheader={
           <Tooltip title={formattedDate}>
@@ -67,23 +78,25 @@ export default function PostCardDetailsView({
           </Tooltip>
         }
         action={
-          <>
-            <IconButton onClick={handleOpenEditMenu}>
-              <MoreHorizIcon />
-            </IconButton>
-            <Menu
-              id="edit-menu"
-              anchorEl={anchorElEdit}
-              open={Boolean(anchorElEdit)}
-              onClose={handleCloseEditMenu}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-            >
-              <MenuItem onClick={handleCloseEditMenu}>Edit</MenuItem>
-              <MenuItem onClick={handleCloseEditMenu}>Delete</MenuItem>
-            </Menu>
-          </>
+          isPostOwner ? ( // Only show edit menu if user owns the post
+            <>
+              <IconButton onClick={handleOpenEditMenu}>
+                <MoreHorizIcon />
+              </IconButton>
+              <Menu
+                id="edit-menu"
+                anchorEl={anchorElEdit}
+                open={Boolean(anchorElEdit)}
+                onClose={handleCloseEditMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem onClick={handleCloseEditMenu}>Edit</MenuItem>
+                <MenuItem onClick={handleCloseEditMenu}>Delete</MenuItem>
+              </Menu>
+            </>
+          ) : null
         }
       />
       <CardContent sx={{ pt: 1 }}>

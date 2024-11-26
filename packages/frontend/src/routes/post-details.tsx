@@ -17,6 +17,7 @@ import { fetchPostById, addComment } from '../features/post/postSlice'; // Impor
 import { AppDispatch, RootState } from '../app/store';
 import CommentCard from '../components/CommentCard/CommentCard';
 import PostCardDetailsView from '../components/PostCard/PostCardDetailsView';
+import { fetchUserDetails } from '../features/auth/authSlice'; // Add this import
 
 export default function PostDetails() {
   const { postId } = useParams<{ postId: string }>();
@@ -29,6 +30,16 @@ export default function PostDetails() {
     (state: RootState) => state.posts,
   );
   const post = posts.find((p) => p._id === postId);
+
+  // Add this to get the logged in user's ID
+  const { userId: loggedInUserId } = useSelector(
+    (state: RootState) => state.auth,
+  );
+
+  // Add these console logs to debug
+  console.log('post author id:', post?.author._id);
+  console.log('logged in user id:', loggedInUserId);
+  console.log('full post data:', post);
 
   // Handle content change
   const handleChange = (
@@ -59,12 +70,17 @@ export default function PostDetails() {
     }
   };
 
-  // Fetch the post if not already available
+  // Combine fetch logic into a single useEffect
   useEffect(() => {
+    // Fetch user details if not already available
+    if (!loggedInUserId) {
+      dispatch(fetchUserDetails());
+    }
+    // Fetch post if not available
     if (postId && !post) {
       dispatch(fetchPostById(postId));
     }
-  }, [dispatch, postId, post]);
+  }, [dispatch, postId, post, loggedInUserId]);
 
   return (
     <Container maxWidth="sm" sx={centerContainerStyles}>
@@ -98,6 +114,8 @@ export default function PostDetails() {
           <PostCardDetailsView
             postId={post._id}
             author={post.author.username}
+            authorId={post.author._id}
+            loggedInUserId={loggedInUserId}
             content={post.content}
             date={post.date}
             commentCount={post.comments.length}
@@ -147,6 +165,8 @@ export default function PostDetails() {
                   key={comment._id}
                   commentId={comment._id}
                   author={comment.author.username}
+                  authorId={comment.author._id}
+                  loggedInUserId={loggedInUserId}
                   content={comment.content}
                   date={comment.date}
                 />

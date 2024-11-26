@@ -16,6 +16,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { format, formatDistanceToNow } from 'date-fns';
 import YouChip from '../shared/YouChip';
+import TimeDisplay from '../shared/TimeDisplay';
 
 interface PostCardProps {
   postId: string;
@@ -43,15 +44,6 @@ export default function PostCardDetailsView({
     setAnchorElEdit(null);
   };
 
-  // Convert the date to a Date object
-  const postDate = new Date(date);
-
-  // Format the date for the tooltip (e.g., "November 16, at 7:30pm")
-  const formattedDate = format(postDate, "MMMM d, 'at' h:mma");
-
-  // Calculate the relative time for display (e.g., "39m ago")
-  const relativeTime = formatDistanceToNow(postDate, { addSuffix: true });
-
   // Add this check
   const isPostOwner = loggedInUserId === authorId;
 
@@ -70,15 +62,7 @@ export default function PostCardDetailsView({
             {isPostOwner && <YouChip />}
           </Stack>
         }
-        subheader={
-          <Tooltip title={formattedDate}>
-            <span style={{ display: 'inline-block' }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                {relativeTime}
-              </Typography>
-            </span>
-          </Tooltip>
-        }
+        subheader={<TimeDisplay date={date} />}
         action={
           isPostOwner ? ( // Only show edit menu if user owns the post
             <>

@@ -10,9 +10,9 @@ import {
 } from '@mui/material';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import YouChip from '../shared/YouChip';
+import TimeDisplay from '../shared/TimeDisplay';
 
 interface PostCardFeedViewProps {
   postId: string;
@@ -33,12 +33,6 @@ export default function PostCardFeedView({
   authorId,
   loggedInUserId,
 }: PostCardFeedViewProps) {
-  const postDate = new Date(date);
-  const formattedDate = format(postDate, "MMMM d, 'at' h:mma");
-
-  // Calculate the relative time for display (e.g., "39m ago")
-  const relativeTime = formatDistanceToNow(postDate, { addSuffix: true });
-
   const isPostOwner = loggedInUserId === authorId;
 
   const cardContent = (
@@ -56,15 +50,7 @@ export default function PostCardFeedView({
             {isPostOwner && <YouChip />}
           </Stack>
         }
-        subheader={
-          <Tooltip title={formattedDate}>
-            <span style={{ display: 'inline-block' }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                {relativeTime}
-              </Typography>
-            </span>
-          </Tooltip>
-        }
+        subheader={<TimeDisplay date={date} />}
       />
       <CardContent sx={{ pt: 1 }}>
         <Typography

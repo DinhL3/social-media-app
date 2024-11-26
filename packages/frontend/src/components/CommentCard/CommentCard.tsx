@@ -15,6 +15,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { format, formatDistanceToNow } from 'date-fns';
 import YouChip from '../shared/YouChip';
+import TimeDisplay from '../shared/TimeDisplay';
 
 interface CommentCardProps {
   commentId: string;
@@ -43,14 +44,6 @@ export default function CommentCard({
   // Check if the logged-in user is the comment author
   const isCommentOwner = loggedInUserId === authorId;
 
-  const postDate = new Date(date);
-
-  // Format the date for the tooltip (e.g., "November 16, at 7:30pm")
-  const formattedDate = format(postDate, "MMMM d, 'at' h:mma");
-
-  // Calculate the relative time for display (e.g., "39m ago")
-  const relativeTime = formatDistanceToNow(postDate, { addSuffix: true });
-
   return (
     <Card
       variant="outlined"
@@ -74,15 +67,7 @@ export default function CommentCard({
             {isCommentOwner && <YouChip />}
           </Stack>
         }
-        subheader={
-          <Tooltip title={formattedDate}>
-            <span style={{ display: 'inline-block' }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                {relativeTime}
-              </Typography>
-            </span>
-          </Tooltip>
-        }
+        subheader={<TimeDisplay date={date} />}
         action={
           isCommentOwner ? (
             <>

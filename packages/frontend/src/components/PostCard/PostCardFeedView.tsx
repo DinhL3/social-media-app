@@ -3,16 +3,12 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  CardHeader,
   Stack,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Link } from 'react-router-dom';
-import YouChip from '../shared/YouChip';
-import TimeDisplay from '../shared/TimeDisplay';
+import PostHeader from '../shared/PostHeader';
 
 interface PostCardFeedViewProps {
   postId: string;
@@ -37,20 +33,11 @@ export default function PostCardFeedView({
 
   const cardContent = (
     <>
-      <CardHeader
-        sx={{ pb: 0 }}
-        avatar={
-          <AccountCircleIcon sx={{ fontSize: 48, color: 'peach.main' }} />
-        }
-        title={
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="subtitle1" color="tealDark.main">
-              @{author}
-            </Typography>
-            {isPostOwner && <YouChip />}
-          </Stack>
-        }
-        subheader={<TimeDisplay date={date} />}
+      <PostHeader
+        author={author}
+        date={date}
+        isOwner={isPostOwner}
+        showActions={false}
       />
       <CardContent sx={{ pt: 1 }}>
         <Typography

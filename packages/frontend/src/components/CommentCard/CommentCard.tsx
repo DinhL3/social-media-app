@@ -76,9 +76,11 @@ export default function CommentCard({
         }
         subheader={
           <Tooltip title={formattedDate}>
-            <Typography variant="subtitle2" color="text.secondary">
-              {relativeTime}
-            </Typography>
+            <span style={{ display: 'inline-block' }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                {relativeTime}
+              </Typography>
+            </span>
           </Tooltip>
         }
         action={

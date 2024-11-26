@@ -72,9 +72,11 @@ export default function PostCardDetailsView({
         }
         subheader={
           <Tooltip title={formattedDate}>
-            <Typography variant="subtitle2" color="text.secondary">
-              {relativeTime}
-            </Typography>
+            <span style={{ display: 'inline-block' }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                {relativeTime}
+              </Typography>
+            </span>
           </Tooltip>
         }
         action={

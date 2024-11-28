@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 interface ProfileData {
   username: string;
   friends: { _id: string; username: string }[];
+  friendRequests: { _id: string }[]; // Include friendRequests
   posts: {
     _id: string;
     content: string;
@@ -29,7 +30,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<UserDetails | null>(null);
-  const [friendStatus, setFriendStatus] = useState<'notFriend' | 'friends' | 'self' | null>(null);
+  const [friendStatus, setFriendStatus] = useState<'notFriend' | 'friends' | 'self' | 'friendRequestSent' | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -76,6 +77,8 @@ export default function Profile() {
         setFriendStatus('self');
       } else if (profile.friends.some((friend) => friend._id === currentUser.userId)) {
         setFriendStatus('friends');
+      } else if (profile.friendRequests.some((request) => request._id === currentUser.userId)) {
+        setFriendStatus('friendRequestSent');
       } else {
         setFriendStatus('notFriend');
       }
@@ -96,10 +99,9 @@ export default function Profile() {
         { senderId: currentUser.userId, receiverId: profile._id },
         { withCredentials: true }
       );
-      alert(response.data.message); // Notify user
+      setFriendStatus('friendRequestSent'); // Update button state dynamically
     } catch (error: any) {
       console.error('Error sending friend request:', error);
-      alert('Failed to send friend request.');
     }
   };
 
@@ -143,6 +145,10 @@ export default function Profile() {
           <Button variant="contained" onClick={handleSendFriendRequest}>
             Send Friend Request
           </Button>
+        )}
+
+        {friendStatus === 'friendRequestSent' && (
+          <Typography color="secondary">Friend Request Sent</Typography>
         )}
 
         {!currentUser && (

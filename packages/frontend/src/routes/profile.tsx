@@ -134,29 +134,27 @@ export default function Profile() {
     <Box padding={3}>
       <Stack spacing={3}>
         <Typography variant="h4">@{profile.username}</Typography>
+        <Stack width='15em'>
+          {friendStatus === 'friends' && (
+            <Button variant='contained' color='tealDark' href='/chat'> Chat with {profile.username}</Button>
+          )}
 
-        {friendStatus === 'self' && <Typography>You can't add yourself as a friend.</Typography>}
+          {friendStatus === 'notFriend' && (
+            <Button variant="contained" color="tealDark" onClick={handleSendFriendRequest}>
+              Send Friend Request
+            </Button>
+          )}
 
-        {friendStatus === 'friends' && (
-          <Typography color="primary">Friends</Typography>
-        )}
+          {friendStatus === 'friendRequestSent' && (
+            <Typography color="tealDark">Friend Request Sent</Typography>
+          )}
 
-        {friendStatus === 'notFriend' && (
-          <Button variant="contained" onClick={handleSendFriendRequest}>
-            Send Friend Request
-          </Button>
-        )}
-
-        {friendStatus === 'friendRequestSent' && (
-          <Typography color="secondary">Friend Request Sent</Typography>
-        )}
-
-        {!currentUser && (
-          <Button variant="contained" href="/login">
-            Log in to add friend
-          </Button>
-        )}
-
+          {!currentUser && (
+            <Button variant="contained" color="tealDark" href="/login">
+              Log in to add friend
+            </Button>
+          )}
+        </Stack>
         <Box>
           <Typography variant="h6">Friends</Typography>
           {profile.friends.length > 0 ? (

@@ -117,4 +117,22 @@ router.get('/:userId', async (req: Request, res: Response) => {
   }
 });
 
+// Get all friend requests for a user
+router.get('/requests/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).populate('friendRequests', 'username');
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.status(200).json({ friendRequests: user.friendRequests });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 export default router;

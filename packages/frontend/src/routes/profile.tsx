@@ -183,7 +183,7 @@ export default function Profile() {
               variant="contained"
               color="tealDark"
               component={RouterLink}
-              to={`login`}
+              to={`/login`}
             >
               Log in to add friend
             </Button>

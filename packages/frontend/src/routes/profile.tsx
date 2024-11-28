@@ -1,9 +1,16 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Box, CircularProgress, Typography, Stack, Button } from '@mui/material';
+import {
+  Box,
+  CircularProgress,
+  Typography,
+  Stack,
+  Button,
+} from '@mui/material';
 import PostCardFeedView from '../components/PostCard/PostCardFeedView';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { Link as RouterLink } from 'react-router-dom';
 
 interface ProfileData {
   username: string;
@@ -30,12 +37,16 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<UserDetails | null>(null);
-  const [friendStatus, setFriendStatus] = useState<'notFriend' | 'friends' | 'self' | 'friendRequestSent' | null>(null);
+  const [friendStatus, setFriendStatus] = useState<
+    'notFriend' | 'friends' | 'self' | 'friendRequestSent' | null
+  >(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/profile/${username}`);
+        const response = await fetch(
+          `http://localhost:5000/api/profile/${username}`,
+        );
         const data = await response.json();
 
         if (!response.ok) {
@@ -75,9 +86,15 @@ export default function Profile() {
     if (profile && currentUser) {
       if (profile._id === currentUser.userId) {
         setFriendStatus('self');
-      } else if (profile.friends.some((friend) => friend._id === currentUser.userId)) {
+      } else if (
+        profile.friends.some((friend) => friend._id === currentUser.userId)
+      ) {
         setFriendStatus('friends');
-      } else if (profile.friendRequests.some((request) => request._id === currentUser.userId)) {
+      } else if (
+        profile.friendRequests.some(
+          (request) => request._id === currentUser.userId,
+        )
+      ) {
         setFriendStatus('friendRequestSent');
       } else {
         setFriendStatus('notFriend');
@@ -92,12 +109,12 @@ export default function Profile() {
       receiverId: profile._id,
     };
 
-    console.log("Sending friend request with data:", requestData);
+    console.log('Sending friend request with data:', requestData);
     try {
       const response = await axios.post(
         'http://localhost:5000/api/friends/sendRequest',
         { senderId: currentUser.userId, receiverId: profile._id },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       setFriendStatus('friendRequestSent'); // Update button state dynamically
     } catch (error: any) {
@@ -134,13 +151,25 @@ export default function Profile() {
     <Box padding={3}>
       <Stack spacing={3}>
         <Typography variant="h4">@{profile.username}</Typography>
-        <Stack width='15em'>
+        <Stack width="15em">
           {friendStatus === 'friends' && (
-            <Button variant='contained' color='tealDark' href='/chat'> Chat with {profile.username}</Button>
+            <Button
+              variant="contained"
+              color="tealDark"
+              component={RouterLink}
+              to={`/chat`}
+            >
+              {' '}
+              Chat with {profile.username}
+            </Button>
           )}
 
           {friendStatus === 'notFriend' && (
-            <Button variant="contained" color="tealDark" onClick={handleSendFriendRequest}>
+            <Button
+              variant="contained"
+              color="tealDark"
+              onClick={handleSendFriendRequest}
+            >
               Send Friend Request
             </Button>
           )}
@@ -150,7 +179,12 @@ export default function Profile() {
           )}
 
           {!currentUser && (
-            <Button variant="contained" color="tealDark" href="/login">
+            <Button
+              variant="contained"
+              color="tealDark"
+              component={RouterLink}
+              to={`login`}
+            >
               Log in to add friend
             </Button>
           )}

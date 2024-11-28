@@ -1,7 +1,9 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Box, CircularProgress, Typography, Stack } from '@mui/material';
+import { Box, CircularProgress, Typography, Stack, Button } from '@mui/material';
 import PostCardFeedView from '../components/PostCard/PostCardFeedView';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 interface ProfileData {
   username: string;
@@ -11,8 +13,14 @@ interface ProfileData {
     content: string;
     date: string;
     comments: string;
-    author: { username: string }; // Ensuring the author structure exists
+    author: { username: string };
   }[];
+  _id: string;
+}
+
+interface UserDetails {
+  username: string;
+  userId: string;
 }
 
 export default function Profile() {
@@ -20,14 +28,13 @@ export default function Profile() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [currentUser, setCurrentUser] = useState<UserDetails | null>(null);
+  const [friendStatus, setFriendStatus] = useState<'notFriend' | 'friends' | 'self' | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/profile/${username}`,
-        );
+        const response = await fetch(`http://localhost:5000/api/profile/${username}`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -43,8 +50,58 @@ export default function Profile() {
       }
     };
 
+    const fetchCurrentUser = async () => {
+      try {
+        const token = Cookies.get('token');
+        if (!token) return; // Not logged in
+        const response = await axios.get('http://localhost:5000/api/auth/me', {
+          withCredentials: true,
+        });
+        setCurrentUser({
+          username: response.data.username,
+          userId: response.data._id,
+        });
+      } catch (err) {
+        console.error('Error fetching current user:', err);
+      }
+    };
+
     fetchProfile();
+    fetchCurrentUser();
   }, [username]);
+
+  useEffect(() => {
+    if (profile && currentUser) {
+      if (profile._id === currentUser.userId) {
+        setFriendStatus('self');
+      } else if (profile.friends.some((friend) => friend._id === currentUser.userId)) {
+        setFriendStatus('friends');
+      } else {
+        setFriendStatus('notFriend');
+      }
+    }
+  }, [profile, currentUser]);
+
+  const handleSendFriendRequest = async () => {
+    if (!currentUser || !profile) return;
+    const requestData = {
+      senderId: currentUser.userId,
+      receiverId: profile._id,
+    };
+
+    console.log("Sending friend request with data:", requestData);
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/api/friends/sendRequest',
+        { senderId: currentUser.userId, receiverId: profile._id },
+        { withCredentials: true }
+      );
+      alert(response.data.message); // Notify user
+    } catch (error: any) {
+      console.error('Error sending friend request:', error);
+      alert('Failed to send friend request.');
+    }
+  };
 
   if (loading) {
     return (
@@ -67,15 +124,33 @@ export default function Profile() {
     return <Typography variant="h6">Profile not found</Typography>;
   }
 
-  // Filter posts where the author matches the username from the URL
   const userPosts = profile.posts
-    .filter((post) => post.author.username === profile.username) // Compare post's author username with profile.username
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort posts by date (newest first)
+    .filter((post) => post.author.username === profile.username)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <Box padding={3}>
       <Stack spacing={3}>
         <Typography variant="h4">@{profile.username}</Typography>
+
+        {friendStatus === 'self' && <Typography>You can't add yourself as a friend.</Typography>}
+
+        {friendStatus === 'friends' && (
+          <Typography color="primary">Friends</Typography>
+        )}
+
+        {friendStatus === 'notFriend' && (
+          <Button variant="contained" onClick={handleSendFriendRequest}>
+            Send Friend Request
+          </Button>
+        )}
+
+        {!currentUser && (
+          <Button variant="contained" href="/login">
+            Log in to add friend
+          </Button>
+        )}
+
         <Box>
           <Typography variant="h6">Friends</Typography>
           {profile.friends.length > 0 ? (

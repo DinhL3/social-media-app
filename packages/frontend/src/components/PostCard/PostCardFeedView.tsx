@@ -16,8 +16,8 @@ interface PostCardFeedViewProps {
   content: string;
   date: string; // Ensure this is an ISO string or date-compatible format
   commentCount: number;
-  authorId: string;
-  loggedInUserId: string | null;
+  authorId?: string;
+  loggedInUserId?: string | null;
 }
 
 export default function PostCardFeedView({

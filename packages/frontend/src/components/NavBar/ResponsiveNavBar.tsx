@@ -24,6 +24,7 @@ import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { RootState, AppDispatch } from '../../app/store';
 import { fetchUserDetails, logout } from '../../features/auth/authSlice';
+import FriendRequestsModal from '../FriendRequestsModal/FriendRequestsModal'; // Import FriendRequestsModal
 
 const pages = ['Home', 'Chat', 'About'];
 
@@ -36,6 +37,7 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [loggedOut, setLoggedOut] = useState(false); // State to trigger redirection after logout
+  const [openFriendRequestsModal, setOpenFriendRequestsModal] = useState(false); // Manage modal visibility
   const dispatch = useDispatch<AppDispatch>();
   const isMobile = useIsMobile();
 
@@ -72,6 +74,14 @@ function ResponsiveAppBar() {
     dispatch(logout());
     setLoggedOut(true);
     handleCloseUserMenu();
+  };
+
+  const handleOpenFriendRequestsModal = () => {
+    setOpenFriendRequestsModal(true);
+  };
+
+  const handleCloseFriendRequestsModal = () => {
+    setOpenFriendRequestsModal(false);
   };
 
   const renderNavMenu = () => {
@@ -201,6 +211,9 @@ function ResponsiveAppBar() {
         <MenuItem onClick={handleLogout}>
           <Typography textAlign="center">Logout</Typography>
         </MenuItem>
+        <MenuItem onClick={handleOpenFriendRequestsModal}>
+          <Typography textAlign="center">Friend requests</Typography>
+        </MenuItem>
       </Menu>
     );
 
@@ -274,6 +287,11 @@ function ResponsiveAppBar() {
           {isAuthenticated ? renderUserMenu() : renderLoginMenu()}
         </Toolbar>
       </Container>
+      {/* Add Friend Requests Modal */}
+      <FriendRequestsModal
+        open={openFriendRequestsModal}
+        onClose={handleCloseFriendRequestsModal}
+      />
     </AppBar>
   );
 }

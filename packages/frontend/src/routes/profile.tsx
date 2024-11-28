@@ -111,7 +111,7 @@ export default function Profile() {
 
     console.log('Sending friend request with data:', requestData);
     try {
-      const response = await axios.post(
+      await axios.post(
         'http://localhost:5000/api/friends/sendRequest',
         { senderId: currentUser.userId, receiverId: profile._id },
         { withCredentials: true },

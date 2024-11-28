@@ -21,6 +21,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {

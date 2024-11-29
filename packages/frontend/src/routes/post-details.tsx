@@ -36,11 +36,6 @@ export default function PostDetails() {
     (state: RootState) => state.auth,
   );
 
-  // Add these console logs to debug
-  console.log('post author id:', post?.author._id);
-  console.log('logged in user id:', loggedInUserId);
-  console.log('full post data:', post);
-
   // Handle content change
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -81,6 +76,25 @@ export default function PostDetails() {
       dispatch(fetchPostById(postId));
     }
   }, [dispatch, postId, post, loggedInUserId]);
+
+  const renderComments = () => {
+    if (!post?.comments?.length) return null;
+
+    return post.comments
+      .filter((comment) => comment && comment.author) // Filter out invalid comments
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .map((comment) => (
+        <CommentCard
+          key={comment._id}
+          commentId={comment._id}
+          author={comment.author.username}
+          authorId={comment.author._id}
+          loggedInUserId={loggedInUserId}
+          content={comment.content}
+          date={comment.date}
+        />
+      ));
+  };
 
   return (
     <Container maxWidth="sm" sx={centerContainerStyles}>
@@ -154,23 +168,7 @@ export default function PostDetails() {
 
           {/* Display comments */}
           <Stack direction="column" sx={{ mt: 2, width: '100%' }} gap={1}>
-            {post?.comments
-              .slice()
-              .sort(
-                (a, b) =>
-                  new Date(b.date).getTime() - new Date(a.date).getTime(),
-              )
-              .map((comment) => (
-                <CommentCard
-                  key={comment._id}
-                  commentId={comment._id}
-                  author={comment.author.username}
-                  authorId={comment.author._id}
-                  loggedInUserId={loggedInUserId}
-                  content={comment.content}
-                  date={comment.date}
-                />
-              ))}
+            {renderComments()}
           </Stack>
         </>
       )}

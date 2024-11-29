@@ -63,29 +63,30 @@ export const getPostById = async (req: Request, res: Response) => {
 };
 
 export const updatePost = async (req: Request, res: Response) => {
-  const { postId } = req.params;
-  const { content, visibility, userId } = req.body;
-
   try {
-    const post = await Post.findById(postId);
-
-    if (!post) {
-      res.status(404).json({ error: 'Post not found' });
-      return;
-    }
-
-    if (post.author.toString() !== userId) {
-      res.status(403).json({ error: 'Not authorized to edit this post' });
-      return;
-    }
+    const { postId } = req.params;
+    const { content, visibility, userId } = req.body;
 
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
       { content, visibility },
       { new: true },
-    ).populate('author', 'username');
+    )
+      .populate('author', 'username')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'author',
+          select: 'username',
+        },
+      });
 
-    res.status(200).json(updatedPost);
+    if (!updatedPost) {
+      res.status(404).json({ error: 'Post not found' });
+      return;
+    }
+
+    res.json(updatedPost);
   } catch (error) {
     res.status(500).json({ error: 'Error updating post' });
   }

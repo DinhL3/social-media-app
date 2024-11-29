@@ -16,15 +16,15 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  EmojiEmotions as EmojiEmotionsIcon,
   AccountCircle as AccountCircleIcon,
   Login as LoginIcon,
-} from '@mui/icons-material';
+} from '@mui/icons-material'; // Remove EmojiEmotionsIcon
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { RootState, AppDispatch } from '../../app/store';
 import { fetchUserDetails, logout } from '../../features/auth/authSlice';
 import FriendRequestsModal from '../FriendRequestsModal/FriendRequestsModal'; // Import FriendRequestsModal
+import logoImage from '../../assets/some-logo.png'; // Add this import
 
 const pages = ['Home', 'Chat', 'About'];
 
@@ -98,7 +98,7 @@ function ResponsiveAppBar() {
   const renderNavMenu = () => {
     const mobileNavMenu = (
       <>
-        <Box sx={{ flexGrow: 1, display: 'flex' }}>
+        <Box sx={{ display: 'flex' }}>
           <IconButton
             size="large"
             aria-label="menu"
@@ -138,45 +138,64 @@ function ResponsiveAppBar() {
             ))}
           </Menu>
         </Box>
-        <EmojiEmotionsIcon sx={{ mr: 1 }} />
-        <Typography
-          variant="h5"
-          noWrap
-          component={Link}
-          to="/"
+        <Box
           sx={{
-            flexGrow: 1,
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          SOCIAL
-        </Typography>
+          <Box
+            component={Link}
+            to="/"
+            onClick={() => handleNavigation('/')}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <img
+              src={logoImage}
+              alt="Logo"
+              style={{
+                height: '24px',
+                width: 'auto',
+                objectFit: 'contain',
+                display: 'block',
+              }}
+            />
+          </Box>
+        </Box>
+        <Box sx={{ flexGrow: 1 }} />
       </>
     );
 
     const desktopNavMenu = (
       <>
-        <EmojiEmotionsIcon sx={{ mr: 1 }} />
-        <Typography
-          variant="h6"
-          noWrap
+        <Box
           component={Link}
           to="/"
+          onClick={() => handleNavigation('/')}
           sx={{
-            mr: 2,
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          SOCIAL
-        </Typography>
+          <img
+            src={logoImage}
+            alt="Logo"
+            style={{
+              height: '24px',
+              width: 'auto',
+              objectFit: 'contain',
+              display: 'block',
+              marginRight: '8px',
+            }}
+          />
+        </Box>
         <Box sx={{ flexGrow: 1, display: 'flex' }}>
           {pages.map((page) => (
             <Button

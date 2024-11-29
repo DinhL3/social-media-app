@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link, Navigate, useNavigate } from 'react-router-dom'; // Add useNavigate
 import {
   AppBar,
   Box,
@@ -19,7 +20,6 @@ import {
   AccountCircle as AccountCircleIcon,
   Login as LoginIcon,
 } from '@mui/icons-material';
-import { Link, Navigate } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { RootState, AppDispatch } from '../../app/store';
@@ -34,6 +34,7 @@ function useIsMobile(): boolean {
 }
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate(); // Add this hook
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [loggedOut, setLoggedOut] = useState(false); // State to trigger redirection after logout
@@ -84,6 +85,16 @@ function ResponsiveAppBar() {
     setOpenFriendRequestsModal(false);
   };
 
+  const handleProfileClick = () => {
+    handleCloseUserMenu();
+    navigate(`/profile/${username}`);
+  };
+
+  const handleNavigation = (path: string) => {
+    handleCloseNavMenu();
+    navigate(path);
+  };
+
   const renderNavMenu = () => {
     const mobileNavMenu = (
       <>
@@ -116,9 +127,11 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               <MenuItem
                 key={page}
-                component={Link}
-                to={page === 'Home' ? '/' : `/${page.toLowerCase()}`}
-                onClick={handleCloseNavMenu}
+                onClick={() =>
+                  handleNavigation(
+                    page === 'Home' ? '/' : `/${page.toLowerCase()}`,
+                  )
+                }
               >
                 <Typography textAlign="center">{page}</Typography>
               </MenuItem>
@@ -200,13 +213,8 @@ function ResponsiveAppBar() {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        <MenuItem onClick={handleCloseUserMenu}>
-          <Link
-            to={`/profile/${username}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            <Typography textAlign="center">Profile</Typography>
-          </Link>
+        <MenuItem onClick={handleProfileClick}>
+          <Typography textAlign="center">Profile</Typography>
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <Typography textAlign="center">Logout</Typography>

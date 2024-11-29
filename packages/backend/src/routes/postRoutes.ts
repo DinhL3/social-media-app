@@ -6,16 +6,22 @@ import {
   updatePost,
   deletePost,
 } from '../controllers/postController';
-import { addComment } from '../controllers/commentController';
+import {
+  addComment,
+  updateComment,
+  deleteComment,
+} from '../controllers/commentController';
 import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
-router.post('/newPost', authenticateToken, createPost); // Create a new post
+router.post('/newPost', authenticateToken, createPost); // Create new post (auth)
 router.get('/', getAllPosts); // Get all posts
-router.post('/:postId/comments', authenticateToken, addComment); // Add comment to a post
-router.get('/:postId', getPostById); // Get post by ID
-router.put('/:postId', authenticateToken, updatePost); // Add update route
-router.delete('/:postId', authenticateToken, deletePost); // Add delete route
+router.post('/:postId/comments', authenticateToken, addComment); // Add comment (auth)
+router.get('/:postId', getPostById); // Get single post
+router.put('/:postId', authenticateToken, updatePost); // Update post (auth, author only)
+router.delete('/:postId', authenticateToken, deletePost); // Delete post & comments (auth, author only)
+router.put('/:postId/comments/:commentId', authenticateToken, updateComment); // Update comment (auth, author only)
+router.delete('/:postId/comments/:commentId', authenticateToken, deleteComment); // Delete comment (auth, author only)
 
 export default router;

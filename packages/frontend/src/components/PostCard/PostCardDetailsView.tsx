@@ -7,6 +7,7 @@ import {
   Modal,
   Stack,
   Typography,
+  TextField,
 } from '@mui/material';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -14,7 +15,7 @@ import PostHeader from '../shared/PostHeader';
 import { modalBoxStyle } from '../../styles';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../app/store';
-import { deletePost } from '../../features/post/postSlice';
+import { deletePost, updatePost } from '../../features/post/postSlice';
 
 interface PostCardProps {
   postId: string;
@@ -24,6 +25,7 @@ interface PostCardProps {
   content: string;
   date: string;
   commentCount: number;
+  visibility: 'friends' | 'public';
 }
 
 export default function PostCardDetailsView({
@@ -34,8 +36,11 @@ export default function PostCardDetailsView({
   content,
   date,
   commentCount,
+  visibility,
 }: PostCardProps) {
   const [openModal, setOpenModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(content);
   const dispatch = useDispatch<AppDispatch>();
 
   const handleOpenModal = () => setOpenModal(true);
@@ -44,6 +49,28 @@ export default function PostCardDetailsView({
   const handleDelete = () => {
     dispatch(deletePost({ postId, userId: loggedInUserId! }));
     handleCloseModal();
+  };
+
+  const handleEditStart = () => {
+    setIsEditing(true);
+    setEditedContent(content);
+  };
+
+  const handleEditCancel = () => {
+    setIsEditing(false);
+    setEditedContent(content);
+  };
+
+  const handleEditSave = () => {
+    dispatch(
+      updatePost({
+        postId,
+        content: editedContent,
+        visibility,
+        userId: loggedInUserId!,
+      }),
+    );
+    setIsEditing(false);
   };
 
   const isPostOwner = loggedInUserId === authorId;
@@ -88,29 +115,60 @@ export default function PostCardDetailsView({
         author={author}
         date={date}
         isOwner={isPostOwner}
-        onEdit={() => {
-          /* handle edit */
-        }}
-        handleDelete={handleOpenModal} // Pass handleOpenModal to PostHeader
+        onEdit={handleEditStart}
+        onDelete={handleOpenModal} // Change handleDelete to onDelete
       />
       <CardContent sx={{ pt: 1 }}>
-        <Typography
-          variant="body1"
-          sx={{
-            whiteSpace: 'pre-line',
-            fontSize: '1.2rem',
-            lineHeight: 1.5,
-          }}
-          gutterBottom
-        >
-          {content}
-        </Typography>
-        <Stack direction="row" justifyContent="flex-end">
-          <Box display="flex" gap={1} color="text.secondary">
-            <ChatBubbleOutlineOutlinedIcon fontSize="small" />
-            <Typography variant="caption">{commentCount}</Typography>
+        {isEditing ? (
+          <Box component="form" noValidate>
+            <TextField
+              fullWidth
+              multiline
+              minRows={3}
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                color="tealDark"
+                onClick={handleEditCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="tealDark"
+                onClick={handleEditSave}
+              >
+                Save
+              </Button>
+            </Stack>
           </Box>
-        </Stack>
+        ) : (
+          <>
+            <Typography
+              variant="body1"
+              sx={{
+                whiteSpace: 'pre-line',
+                fontSize: '1.2rem',
+                lineHeight: 1.5,
+                overflowWrap: 'break-word',
+                wordBreak: 'break-word',
+              }}
+              gutterBottom
+            >
+              {content}
+            </Typography>
+            <Stack direction="row" justifyContent="flex-end">
+              <Box display="flex" gap={1} color="text.secondary">
+                <ChatBubbleOutlineOutlinedIcon fontSize="small" />
+                <Typography variant="caption">{commentCount}</Typography>
+              </Box>
+            </Stack>
+          </>
+        )}
       </CardContent>
     </>
   );

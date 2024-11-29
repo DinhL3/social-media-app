@@ -6,11 +6,13 @@ import {
   Typography,
   Stack,
   Button,
+  Container,
 } from '@mui/material';
 import PostCardFeedView from '../components/PostCard/PostCardFeedView';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Link as RouterLink } from 'react-router-dom';
+import { centerContainerStyles } from '../styles';
 
 interface ProfileData {
   username: string;
@@ -148,8 +150,8 @@ export default function Profile() {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <Box padding={3}>
-      <Stack spacing={3}>
+    <Container maxWidth="sm" sx={centerContainerStyles}>
+      <Stack spacing={3} width="100%">
         <Typography variant="h4">@{profile.username}</Typography>
         <Stack width="15em">
           {friendStatus === 'friends' && (
@@ -223,6 +225,6 @@ export default function Profile() {
           )}
         </Box>
       </Stack>
-    </Box>
+    </Container>
   );
 }

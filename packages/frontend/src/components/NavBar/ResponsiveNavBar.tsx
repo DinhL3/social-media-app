@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link, Navigate, useNavigate } from 'react-router-dom'; // Add useNavigate
 import {
   AppBar,
   Box,
@@ -15,16 +16,15 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  EmojiEmotions as EmojiEmotionsIcon,
   AccountCircle as AccountCircleIcon,
   Login as LoginIcon,
-} from '@mui/icons-material';
-import { Link, Navigate } from 'react-router-dom';
+} from '@mui/icons-material'; // Remove EmojiEmotionsIcon
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { RootState, AppDispatch } from '../../app/store';
 import { fetchUserDetails, logout } from '../../features/auth/authSlice';
 import FriendRequestsModal from '../FriendRequestsModal/FriendRequestsModal'; // Import FriendRequestsModal
+import logoImage from '../../assets/some-logo.png'; // Add this import
 
 const pages = ['Home', 'Chat', 'About'];
 
@@ -34,6 +34,7 @@ function useIsMobile(): boolean {
 }
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate(); // Add this hook
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [loggedOut, setLoggedOut] = useState(false); // State to trigger redirection after logout
@@ -84,10 +85,20 @@ function ResponsiveAppBar() {
     setOpenFriendRequestsModal(false);
   };
 
+  const handleProfileClick = () => {
+    handleCloseUserMenu();
+    navigate(`/profile/${username}`);
+  };
+
+  const handleNavigation = (path: string) => {
+    handleCloseNavMenu();
+    navigate(path);
+  };
+
   const renderNavMenu = () => {
     const mobileNavMenu = (
       <>
-        <Box sx={{ flexGrow: 1, display: 'flex' }}>
+        <Box sx={{ display: 'flex' }}>
           <IconButton
             size="large"
             aria-label="menu"
@@ -116,54 +127,75 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               <MenuItem
                 key={page}
-                component={Link}
-                to={page === 'Home' ? '/' : `/${page.toLowerCase()}`}
-                onClick={handleCloseNavMenu}
+                onClick={() =>
+                  handleNavigation(
+                    page === 'Home' ? '/' : `/${page.toLowerCase()}`,
+                  )
+                }
               >
                 <Typography textAlign="center">{page}</Typography>
               </MenuItem>
             ))}
           </Menu>
         </Box>
-        <EmojiEmotionsIcon sx={{ mr: 1 }} />
-        <Typography
-          variant="h5"
-          noWrap
-          component={Link}
-          to="/"
+        <Box
           sx={{
-            flexGrow: 1,
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          SOCIAL
-        </Typography>
+          <Box
+            component={Link}
+            to="/"
+            onClick={() => handleNavigation('/')}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <img
+              src={logoImage}
+              alt="Logo"
+              style={{
+                height: '24px',
+                width: 'auto',
+                objectFit: 'contain',
+                display: 'block',
+              }}
+            />
+          </Box>
+        </Box>
+        <Box sx={{ flexGrow: 1 }} />
       </>
     );
 
     const desktopNavMenu = (
       <>
-        <EmojiEmotionsIcon sx={{ mr: 1 }} />
-        <Typography
-          variant="h6"
-          noWrap
+        <Box
           component={Link}
           to="/"
+          onClick={() => handleNavigation('/')}
           sx={{
-            mr: 2,
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          SOCIAL
-        </Typography>
+          <img
+            src={logoImage}
+            alt="Logo"
+            style={{
+              height: '24px',
+              width: 'auto',
+              objectFit: 'contain',
+              display: 'block',
+              marginRight: '8px',
+            }}
+          />
+        </Box>
         <Box sx={{ flexGrow: 1, display: 'flex' }}>
           {pages.map((page) => (
             <Button
@@ -200,13 +232,8 @@ function ResponsiveAppBar() {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        <MenuItem onClick={handleCloseUserMenu}>
-          <Link
-            to={`/profile/${username}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            <Typography textAlign="center">Profile</Typography>
-          </Link>
+        <MenuItem onClick={handleProfileClick}>
+          <Typography textAlign="center">Profile</Typography>
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <Typography textAlign="center">Logout</Typography>

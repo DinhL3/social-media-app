@@ -116,7 +116,7 @@ export default function PostCardDetailsView({
         date={date}
         isOwner={isPostOwner}
         onEdit={handleEditStart}
-        handleDelete={handleOpenModal}
+        onDelete={handleOpenModal} // Change handleDelete to onDelete
       />
       <CardContent sx={{ pt: 1 }}>
         {isEditing ? (

@@ -86,6 +86,7 @@ export default function PostDetails() {
       .map((comment) => (
         <CommentCard
           key={comment._id}
+          postId={postId!} // Add this line to pass postId
           commentId={comment._id}
           author={comment.author.username}
           authorId={comment.author._id}

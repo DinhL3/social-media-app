@@ -184,6 +184,61 @@ export const deletePost = createAsyncThunk(
   },
 );
 
+export const updateComment = createAsyncThunk(
+  'posts/updateComment',
+  async (
+    {
+      postId,
+      commentId,
+      content,
+    }: {
+      postId: string;
+      commentId: string;
+      content: string;
+    },
+    thunkAPI,
+  ) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/posts/${postId}/comments/${commentId}`,
+        { content },
+        { withCredentials: true },
+      );
+      return { postId, comment: response.data };
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(
+          error.response.data.error || 'Error updating comment',
+        );
+      }
+      return thunkAPI.rejectWithValue('Error updating comment');
+    }
+  },
+);
+
+export const deleteComment = createAsyncThunk(
+  'posts/deleteComment',
+  async (
+    { postId, commentId }: { postId: string; commentId: string },
+    thunkAPI,
+  ) => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/posts/${postId}/comments/${commentId}`,
+        { withCredentials: true },
+      );
+      return { postId, commentId };
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(
+          error.response.data.error || 'Error deleting comment',
+        );
+      }
+      return thunkAPI.rejectWithValue('Error deleting comment');
+    }
+  },
+);
+
 const postSlice = createSlice({
   name: 'posts',
   initialState,
@@ -294,6 +349,49 @@ const postSlice = createSlice({
         state.posts = state.posts.filter((post) => post._id !== action.payload);
       })
       .addCase(deletePost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Handle updateComment
+    builder
+      .addCase(updateComment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateComment.fulfilled, (state, action) => {
+        state.loading = false;
+        const { postId, comment } = action.payload;
+        const post = state.posts.find((p) => p._id === postId);
+        if (post) {
+          const commentIndex = post.comments.findIndex(
+            (c) => c._id === comment._id,
+          );
+          if (commentIndex !== -1) {
+            post.comments[commentIndex] = comment;
+          }
+        }
+      })
+      .addCase(updateComment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Handle deleteComment
+    builder
+      .addCase(deleteComment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.loading = false;
+        const { postId, commentId } = action.payload;
+        const post = state.posts.find((p) => p._id === postId);
+        if (post) {
+          post.comments = post.comments.filter((c) => c._id !== commentId);
+        }
+      })
+      .addCase(deleteComment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

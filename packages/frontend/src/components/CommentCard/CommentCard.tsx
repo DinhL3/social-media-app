@@ -36,7 +36,16 @@ export default function CommentCard({
         }}
       />
       <CardContent sx={{ pt: 1 }}>
-        <Typography variant="body1">{content}</Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            whiteSpace: 'pre-line',
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word',
+          }}
+        >
+          {content}
+        </Typography>
       </CardContent>
     </Card>
   );

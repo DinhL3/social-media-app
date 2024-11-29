@@ -100,6 +100,8 @@ export default function PostCardDetailsView({
             whiteSpace: 'pre-line',
             fontSize: '1.2rem',
             lineHeight: 1.5,
+            overflowWrap: 'break-word',
+            wordBreak: 'break-word',
           }}
           gutterBottom
         >

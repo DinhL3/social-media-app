@@ -2,10 +2,28 @@ import { Request, Response } from 'express';
 import sharp from 'sharp';
 import fs from 'fs/promises'; // Use promises version
 import path from 'path';
+import sanitize from 'sanitize-filename';
 import Post from '../models/Post';
 import Comment from '../models/Comment';
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const deleteFileWithRetry = async (filePath: string, retries: number = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await fs.unlink(filePath);
+      console.log(`Successfully deleted file: ${filePath}`);
+      return;
+    } catch (error) {
+      console.error(`Failed to delete file: ${filePath}, attempt ${i + 1}`);
+      if (i < retries - 1) {
+        await delay(100); // Wait before retrying
+      } else {
+        console.error('Max retries reached. Could not delete file:', error);
+      }
+    }
+  }
+};
 
 export const createPost = async (req: Request, res: Response) => {
   const { content, visibility, userId } = req.body;
@@ -22,8 +40,16 @@ export const createPost = async (req: Request, res: Response) => {
     if (req.file) {
       originalFilePath = req.file.path;
       const uploadsDir = path.join(__dirname, '../../uploads');
-      const outputPath = path.join(uploadsDir, `resized-${req.file.filename}`);
-      imageUrl = `/uploads/resized-${req.file.filename}`;
+
+      // Get file extension and sanitize the filename
+      const ext = path.extname(req.file.filename);
+      const nameWithoutExt = path.basename(req.file.filename, ext);
+      const sanitizedName = sanitize(nameWithoutExt);
+      const resizedFilename = `resized-${sanitizedName}${ext}`;
+
+      const outputPath = path.join(uploadsDir, resizedFilename);
+      // URL-encode the filename for storage in DB
+      imageUrl = `/uploads/${encodeURIComponent(resizedFilename)}`;
 
       // Ensure the uploads directory exists
       try {
@@ -34,20 +60,42 @@ export const createPost = async (req: Request, res: Response) => {
 
       // Process image with sharp
       const sharpInstance = sharp(originalFilePath);
-      await sharpInstance
-        .resize({ width: 500, height: 500, fit: 'inside' })
-        .toFile(outputPath);
+      const metadata = await sharpInstance.metadata();
+
+      if (metadata.width && metadata.height) {
+        const aspectRatio = metadata.width / metadata.height;
+
+        let resizeOptions = {
+          width: metadata.width,
+          height: metadata.height,
+          fit: 'inside' as const,
+        };
+
+        if (metadata.width > 1080 || metadata.height > 1080) {
+          if (aspectRatio > 1) {
+            // Image is wider than tall
+            resizeOptions.width = 1080;
+            resizeOptions.height = Math.round(1080 / aspectRatio);
+          } else {
+            // Image is taller than wide
+            resizeOptions.height = 1080;
+            resizeOptions.width = Math.round(1080 * aspectRatio);
+          }
+        }
+
+        await sharpInstance.resize(resizeOptions).toFile(outputPath);
+      } else {
+        // Fallback if metadata cannot be read
+        await sharpInstance
+          .resize(1080, 1080, { fit: 'inside' })
+          .toFile(outputPath);
+      }
 
       // Wait for Sharp to finish and release file handles
       await delay(100);
 
-      // Delete original file
-      try {
-        await fs.unlink(originalFilePath);
-      } catch (unlinkError) {
-        console.error('Failed to delete original file:', unlinkError);
-        // Continue execution even if delete fails
-      }
+      // Delete original file with retry mechanism
+      await deleteFileWithRetry(originalFilePath);
     }
 
     const newPost = new Post({
@@ -59,11 +107,22 @@ export const createPost = async (req: Request, res: Response) => {
     });
 
     await newPost.save();
-    res.status(201).json(newPost);
+
+    // Populate author before sending response
+    const populatedPost = await Post.findById(newPost._id).populate(
+      'author',
+      'username',
+    );
+
+    res.status(201).json(populatedPost);
   } catch (error) {
     // Clean up any files if post creation fails
     if (imageUrl) {
-      const resizedPath = path.join(__dirname, '../..', imageUrl);
+      const resizedPath = path.join(
+        __dirname,
+        '../..',
+        decodeURIComponent(imageUrl),
+      );
       try {
         await fs.unlink(resizedPath);
       } catch (cleanupError) {

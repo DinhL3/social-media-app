@@ -123,11 +123,12 @@ const Root: React.FC = () => {
                 key={post._id}
                 postId={post._id}
                 author={post.author.username}
-                authorId={post.author._id} // Add this
-                loggedInUserId={loggedInUserId} // Add this
+                authorId={post.author._id}
+                loggedInUserId={loggedInUserId}
                 content={post.content}
                 date={post.date}
                 commentCount={post.comments.length}
+                imageUrl={post.imageUrl}
               />
             ))}
         </Stack>

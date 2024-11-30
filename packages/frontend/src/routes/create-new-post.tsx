@@ -125,7 +125,7 @@ export default function CreateNewPost() {
         </label>
         <Button
           variant="contained"
-          startIcon={loading ? <CircularProgress size={20} /> : <SendIcon />}
+          startIcon={!loading && <SendIcon />}
           color="tealDark"
           onClick={handlePostClick}
           disabled={

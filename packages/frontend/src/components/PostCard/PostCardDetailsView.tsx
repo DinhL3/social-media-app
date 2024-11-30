@@ -121,14 +121,6 @@ export default function PostCardDetailsView({
         onEdit={handleEditStart}
         onDelete={handleOpenModal}
       />
-      {imageUrl && (
-        <CardMedia
-          component="img"
-          height="500"
-          image={imageUrl ? `http://localhost:5000${imageUrl}` : undefined} // Adjust the base URL as needed
-          alt="Post image"
-        />
-      )}
       <CardContent sx={{ pt: 1 }}>
         {isEditing ? (
           <Box component="form" noValidate>
@@ -172,6 +164,27 @@ export default function PostCardDetailsView({
             >
               {content}
             </Typography>
+            {imageUrl && (
+              <Box
+                sx={{
+                  width: '100%',
+                  mb: 2,
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <img
+                  src={`http://localhost:5000${decodeURIComponent(imageUrl)}`}
+                  alt="Post image"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '500px',
+                    objectFit: 'contain',
+                    borderRadius: '8px',
+                  }}
+                />
+              </Box>
+            )}
             <Stack direction="row" justifyContent="flex-end">
               <Box display="flex" gap={1} color="text.secondary">
                 <ChatBubbleOutlineOutlinedIcon fontSize="small" />

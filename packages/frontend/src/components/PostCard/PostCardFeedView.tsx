@@ -42,14 +42,6 @@ export default function PostCardFeedView({
         isOwner={isPostOwner}
         showActions={false}
       />
-      {imageUrl && (
-        <CardMedia
-          component="img"
-          height="500"
-          image={imageUrl ? `http://localhost:5000${imageUrl}` : undefined}
-          alt="Post image"
-        />
-      )}
       <CardContent sx={{ pt: 1 }}>
         <Typography
           variant="body1"
@@ -62,6 +54,27 @@ export default function PostCardFeedView({
         >
           {content}
         </Typography>
+        {imageUrl && (
+          <Box
+            sx={{
+              width: '100%',
+              mb: 2,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            <img
+              src={`http://localhost:5000${decodeURIComponent(imageUrl)}`}
+              alt="Post image"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '500px',
+                objectFit: 'contain',
+                borderRadius: '8px',
+              }}
+            />
+          </Box>
+        )}
         <Stack direction="row" justifyContent="flex-end">
           <Box display="flex" gap={1} color="text.secondary">
             <ChatBubbleOutlineOutlinedIcon fontSize="small" />

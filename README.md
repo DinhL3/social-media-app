@@ -2,8 +2,8 @@
 
 This is a monorepo for a Social Media App, made with React TypeScript Frontend, and Node.js Express TypeScript backend
 
-![Root view desktop](https://res.cloudinary.com/doeoghxhd/image/upload/v1732820125/social-media-app/social-root_p2xdri.png)  
-![Post details view mobile](https://res.cloudinary.com/doeoghxhd/image/upload/v1732820126/social-media-app/social-post-details_asdwid.png)
+![Root view desktop](https://res.cloudinary.com/doeoghxhd/image/upload/v1733009382/social-media-app/social-root_asoztg.png)  
+![Post details view mobile](https://res.cloudinary.com/doeoghxhd/image/upload/v1733009410/social-media-app/social-post-details_ljsu6w.png)
 
 ## Installation
 

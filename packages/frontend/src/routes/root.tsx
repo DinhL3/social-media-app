@@ -43,12 +43,12 @@ const Root: React.FC = () => {
           sx={{ flexWrap: 'wrap', justifyContent: 'center' }}
           color="#e29578"
         >
-          <Typography variant="h4">Welcome!</Typography>
-          <Typography variant="h4">(„• ֊ •„)੭</Typography>
+          <Typography variant="h5">Welcome!</Typography>
+          <Typography variant="h5">(„• ֊ •„)੭</Typography>
         </Stack>
 
         {!isAuthenticated ? (
-          <Typography variant="body1" sx={{ mt: 2, textAlign: 'center' }}>
+          <Typography variant="body1" sx={{ mt: 1, textAlign: 'center' }}>
             Please{' '}
             <MaterialLink component={RouterLink} to="/login">
               log in
@@ -67,7 +67,7 @@ const Root: React.FC = () => {
               flexWrap: 'wrap',
               justifyContent: 'center',
               alignItems: 'center',
-              mt: 2,
+              mt: 1,
             }}
           >
             <Typography variant="body1">Share what's on your mind?</Typography>
@@ -83,12 +83,12 @@ const Root: React.FC = () => {
             </Button>
           </Stack>
         )}
-
+        {/*
         <Divider textAlign="center" sx={{ width: '100%', mt: 2 }}>
           <Typography variant="caption" component="span" color="text.disabled">
             Your feed
           </Typography>
-        </Divider>
+        </Divider> */}
 
         {/* Display loading state */}
         {loading && (
@@ -112,7 +112,7 @@ const Root: React.FC = () => {
         )}
 
         {/* Display posts */}
-        <Stack direction="column" gap={2} sx={{ mt: 3 }}>
+        <Stack direction="column" gap={2} sx={{ mt: 3 }} width="100%">
           {posts
             .slice() // Create a shallow copy to avoid mutating the original state
             .sort(
@@ -123,11 +123,12 @@ const Root: React.FC = () => {
                 key={post._id}
                 postId={post._id}
                 author={post.author.username}
-                authorId={post.author._id} // Add this
-                loggedInUserId={loggedInUserId} // Add this
+                authorId={post.author._id}
+                loggedInUserId={loggedInUserId}
                 content={post.content}
                 date={post.date}
                 commentCount={post.comments.length}
+                imageUrl={post.imageUrl}
               />
             ))}
         </Stack>

@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
   TextField,
+  CardMedia,
 } from '@mui/material';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../app/store';
 import { deletePost, updatePost } from '../../features/post/postSlice';
 
-interface PostCardProps {
+interface PostCardDetailsViewProps {
   postId: string;
   author: string;
   authorId: string;
@@ -26,6 +27,7 @@ interface PostCardProps {
   date: string;
   commentCount: number;
   visibility: 'friends' | 'public';
+  imageUrl?: string;
 }
 
 export default function PostCardDetailsView({
@@ -37,7 +39,8 @@ export default function PostCardDetailsView({
   date,
   commentCount,
   visibility,
-}: PostCardProps) {
+  imageUrl,
+}: PostCardDetailsViewProps) {
   const [openModal, setOpenModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
@@ -116,7 +119,7 @@ export default function PostCardDetailsView({
         date={date}
         isOwner={isPostOwner}
         onEdit={handleEditStart}
-        onDelete={handleOpenModal} // Change handleDelete to onDelete
+        onDelete={handleOpenModal}
       />
       <CardContent sx={{ pt: 1 }}>
         {isEditing ? (
@@ -161,6 +164,27 @@ export default function PostCardDetailsView({
             >
               {content}
             </Typography>
+            {imageUrl && (
+              <Box
+                sx={{
+                  width: '100%',
+                  mb: 2,
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <img
+                  src={`http://localhost:5000${decodeURIComponent(imageUrl)}`}
+                  alt="Post image"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '500px',
+                    objectFit: 'contain',
+                    borderRadius: '8px',
+                  }}
+                />
+              </Box>
+            )}
             <Stack direction="row" justifyContent="flex-end">
               <Box display="flex" gap={1} color="text.secondary">
                 <ChatBubbleOutlineOutlinedIcon fontSize="small" />

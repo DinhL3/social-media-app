@@ -19,6 +19,7 @@ interface Post {
     content: string;
     date: string;
   }>;
+  imageUrl?: string;
 }
 
 interface PostState {
@@ -41,14 +42,26 @@ export const createPost = createAsyncThunk(
       content: string;
       visibility: 'friends' | 'public';
       userId: string;
+      image?: File;
     },
     thunkAPI,
   ) => {
     try {
+      const formData = new FormData();
+      formData.append('content', postData.content);
+      formData.append('visibility', postData.visibility);
+      formData.append('userId', postData.userId);
+      if (postData.image) {
+        formData.append('image', postData.image);
+      }
+
       const response = await axios.post(
         'http://localhost:5000/api/posts/newPost',
-        postData,
-        { withCredentials: true },
+        formData,
+        {
+          withCredentials: true,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        },
       );
       return response.data;
     } catch (error) {

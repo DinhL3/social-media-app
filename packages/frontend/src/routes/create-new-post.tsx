@@ -5,11 +5,14 @@ import {
   Button,
   CircularProgress,
   Container,
+  IconButton,
   Stack,
   TextField,
   Typography,
+  Box,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 
 import { AppDispatch, RootState } from '../app/store';
 import { createPost } from '../features/post/postSlice';
@@ -18,10 +21,13 @@ import { centerContainerStyles } from '../styles';
 export default function CreateNewPost() {
   const [content, setContent] = useState('');
   const [redirect, setRedirect] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
 
   // Get loading state from Redux store
   const { loading } = useSelector((state: RootState) => state.posts);
+  const { userId } = useSelector((state: RootState) => state.auth);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -43,6 +49,14 @@ export default function CreateNewPost() {
     }
   };
 
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handlePostClick = async (e: FormEvent) => {
     e.preventDefault();
     if (content.trim().length > 0 && content.trim().length <= 300) {
@@ -50,7 +64,8 @@ export default function CreateNewPost() {
         createPost({
           content,
           visibility: 'public',
-          userId: '',
+          userId: userId!,
+          image: image || undefined,
         }),
       );
       setRedirect(true);
@@ -68,7 +83,7 @@ export default function CreateNewPost() {
         Create a new post
       </Typography>
       <TextField
-        id="post-content-inpuit"
+        id="post-content-input"
         multiline
         minRows={5}
         variant="outlined"
@@ -78,10 +93,39 @@ export default function CreateNewPost() {
         onChange={handleChange}
         helperText={`${300 - content.length} characters remaining`}
       />
-      <Stack direction="row" justifyContent="center" sx={{ mt: 2 }}>
+      {imagePreview && (
+        <Box
+          component="img"
+          src={imagePreview}
+          alt="Image preview"
+          sx={{ width: 100, height: 100, mt: 2, objectFit: 'cover' }}
+        />
+      )}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        width="100%"
+        sx={{ mt: 1 }}
+      >
+        {/* Label wraps the input to make it look like a button */}
+        <label htmlFor="image-upload">
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }} // Hide the default file input
+            onChange={handleImageChange}
+          />
+          <IconButton
+            component="span" // Make the label look like a button
+            sx={{ color: 'tealDark.main' }}
+          >
+            <AddPhotoAlternateOutlinedIcon />
+          </IconButton>
+        </label>
         <Button
           variant="contained"
-          startIcon={loading ? <CircularProgress size={20} /> : <SendIcon />}
+          startIcon={!loading && <SendIcon />}
           color="tealDark"
           onClick={handlePostClick}
           disabled={

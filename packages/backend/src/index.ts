@@ -12,6 +12,7 @@ import http from 'http';
 import messageController from './controllers/messageController';
 import userProfileController from './controllers/userProfileController';
 import { authenticateToken } from './middleware/authMiddleware';
+import path from 'path'; // Import path
 
 dotenv.config();
 // .env file should be in /packages/backend/
@@ -41,6 +42,9 @@ app.use(
 app.use(morgan('dev')); // Log requests to the console
 app.use(express.json()); // For parsing application/json
 app.use(cookieParser()); // For parsing cookies
+
+// Serve static files from the 'uploads' directorynpm install sanitize-filename
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);

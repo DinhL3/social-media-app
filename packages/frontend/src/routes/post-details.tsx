@@ -134,6 +134,8 @@ export default function PostDetails() {
             content={post.content}
             date={post.date}
             commentCount={post.comments.length}
+            imageUrl={post.imageUrl}
+            visibility={post.visibility}
           />
 
           {/* Add a comment */}

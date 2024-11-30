@@ -33,3 +33,7 @@ packages/*/.env
 
 # Coverage directory
 coverage/
+
+# Uploads folder - keep folder but ignore contents
+/packages/backend/uploads/*
+!/packages/backend/uploads/.gitkeep

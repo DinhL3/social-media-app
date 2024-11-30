@@ -5,11 +5,13 @@ import {
   Button,
   CircularProgress,
   Container,
+  IconButton,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 
 import { AppDispatch, RootState } from '../app/store';
 import { createPost } from '../features/post/postSlice';
@@ -41,6 +43,10 @@ export default function CreateNewPost() {
         .slice(0, 300); // Limit to 300 characters
       setContent(trimmedValue);
     }
+  };
+
+  const handleUploadImageClick = () => {
+    return;
   };
 
   const handlePostClick = async (e: FormEvent) => {
@@ -78,7 +84,18 @@ export default function CreateNewPost() {
         onChange={handleChange}
         helperText={`${300 - content.length} characters remaining`}
       />
-      <Stack direction="row" justifyContent="center" sx={{ mt: 2 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        width="100%"
+        sx={{ mt: 1 }}
+      >
+        <IconButton
+          sx={{ color: 'tealDark.main' }}
+          onClick={handleUploadImageClick}
+        >
+          <AddPhotoAlternateOutlinedIcon />
+        </IconButton>
         <Button
           variant="contained"
           startIcon={loading ? <CircularProgress size={20} /> : <SendIcon />}

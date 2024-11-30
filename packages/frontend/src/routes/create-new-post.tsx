@@ -9,6 +9,7 @@ import {
   Stack,
   TextField,
   Typography,
+  Box,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
@@ -20,6 +21,8 @@ import { centerContainerStyles } from '../styles';
 export default function CreateNewPost() {
   const [content, setContent] = useState('');
   const [redirect, setRedirect] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
 
   // Get loading state from Redux store
@@ -45,8 +48,12 @@ export default function CreateNewPost() {
     }
   };
 
-  const handleUploadImageClick = () => {
-    return;
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const handlePostClick = async (e: FormEvent) => {
@@ -74,7 +81,7 @@ export default function CreateNewPost() {
         Create a new post
       </Typography>
       <TextField
-        id="post-content-inpuit"
+        id="post-content-input"
         multiline
         minRows={5}
         variant="outlined"
@@ -84,18 +91,36 @@ export default function CreateNewPost() {
         onChange={handleChange}
         helperText={`${300 - content.length} characters remaining`}
       />
+      {imagePreview && (
+        <Box
+          component="img"
+          src={imagePreview}
+          alt="Image preview"
+          sx={{ width: 100, height: 100, mt: 2, objectFit: 'cover' }}
+        />
+      )}
       <Stack
         direction="row"
         justifyContent="space-between"
         width="100%"
         sx={{ mt: 1 }}
       >
-        <IconButton
-          sx={{ color: 'tealDark.main' }}
-          onClick={handleUploadImageClick}
-        >
-          <AddPhotoAlternateOutlinedIcon />
-        </IconButton>
+        {/* Label wraps the input to make it look like a button */}
+        <label htmlFor="image-upload">
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }} // Hide the default file input
+            onChange={handleImageChange}
+          />
+          <IconButton
+            component="span" // Make the label look like a button
+            sx={{ color: 'tealDark.main' }}
+          >
+            <AddPhotoAlternateOutlinedIcon />
+          </IconButton>
+        </label>
         <Button
           variant="contained"
           startIcon={loading ? <CircularProgress size={20} /> : <SendIcon />}

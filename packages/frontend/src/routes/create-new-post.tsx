@@ -27,6 +27,7 @@ export default function CreateNewPost() {
 
   // Get loading state from Redux store
   const { loading } = useSelector((state: RootState) => state.posts);
+  const { userId } = useSelector((state: RootState) => state.auth);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -63,7 +64,8 @@ export default function CreateNewPost() {
         createPost({
           content,
           visibility: 'public',
-          userId: '',
+          userId: userId!,
+          image: image || undefined,
         }),
       );
       setRedirect(true);

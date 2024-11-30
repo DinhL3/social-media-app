@@ -12,10 +12,11 @@ import {
   deleteComment,
 } from '../controllers/commentController';
 import { authenticateToken } from '../middleware/authMiddleware';
+import upload from '../middleware/upload';
 
 const router = express.Router();
 
-router.post('/newPost', authenticateToken, createPost); // Create new post (auth)
+router.post('/newPost', authenticateToken, upload.single('image'), createPost); // Create new post (auth)
 router.get('/', getAllPosts); // Get all posts
 router.post('/:postId/comments', authenticateToken, addComment); // Add comment (auth)
 router.get('/:postId', getPostById); // Get single post

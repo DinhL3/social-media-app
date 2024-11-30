@@ -12,6 +12,8 @@ import http from 'http';
 import messageController from './controllers/messageController';
 import userProfileController from './controllers/userProfileController';
 import { authenticateToken } from './middleware/authMiddleware';
+import path from 'path'; // Import path
+import fs from 'fs'; // Import fs
 
 dotenv.config();
 // .env file should be in /packages/backend/
@@ -31,6 +33,12 @@ mongoose
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Middleware
 app.use(
   cors({
@@ -41,6 +49,9 @@ app.use(
 app.use(morgan('dev')); // Log requests to the console
 app.use(express.json()); // For parsing application/json
 app.use(cookieParser()); // For parsing cookies
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);

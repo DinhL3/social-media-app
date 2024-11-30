@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
   TextField,
+  CardMedia,
 } from '@mui/material';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../app/store';
 import { deletePost, updatePost } from '../../features/post/postSlice';
 
-interface PostCardProps {
+interface PostCardDetailsViewProps {
   postId: string;
   author: string;
   authorId: string;
@@ -26,6 +27,7 @@ interface PostCardProps {
   date: string;
   commentCount: number;
   visibility: 'friends' | 'public';
+  imageUrl?: string;
 }
 
 export default function PostCardDetailsView({
@@ -37,7 +39,8 @@ export default function PostCardDetailsView({
   date,
   commentCount,
   visibility,
-}: PostCardProps) {
+  imageUrl,
+}: PostCardDetailsViewProps) {
   const [openModal, setOpenModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
@@ -116,8 +119,16 @@ export default function PostCardDetailsView({
         date={date}
         isOwner={isPostOwner}
         onEdit={handleEditStart}
-        onDelete={handleOpenModal} // Change handleDelete to onDelete
+        onDelete={handleOpenModal}
       />
+      {imageUrl && (
+        <CardMedia
+          component="img"
+          height="500"
+          image={imageUrl ? `http://localhost:5000${imageUrl}` : undefined} // Adjust the base URL as needed
+          alt="Post image"
+        />
+      )}
       <CardContent sx={{ pt: 1 }}>
         {isEditing ? (
           <Box component="form" noValidate>

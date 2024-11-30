@@ -3,6 +3,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  CardMedia,
   Stack,
   Typography,
 } from '@mui/material';
@@ -18,6 +19,7 @@ interface PostCardFeedViewProps {
   commentCount: number;
   authorId?: string;
   loggedInUserId?: string | null;
+  imageUrl?: string; // Add imageUrl
 }
 
 export default function PostCardFeedView({
@@ -28,6 +30,7 @@ export default function PostCardFeedView({
   commentCount,
   authorId,
   loggedInUserId,
+  imageUrl,
 }: PostCardFeedViewProps) {
   const isPostOwner = loggedInUserId === authorId;
 
@@ -39,13 +42,21 @@ export default function PostCardFeedView({
         isOwner={isPostOwner}
         showActions={false}
       />
+      {imageUrl && (
+        <CardMedia
+          component="img"
+          height="500"
+          image={imageUrl ? `http://localhost:5000${imageUrl}` : undefined}
+          alt="Post image"
+        />
+      )}
       <CardContent sx={{ pt: 1 }}>
         <Typography
           variant="body1"
           sx={{
             whiteSpace: 'pre-line',
             overflowWrap: 'break-word',
-            wordBreak: 'break-word'
+            wordBreak: 'break-word',
           }}
           gutterBottom
         >

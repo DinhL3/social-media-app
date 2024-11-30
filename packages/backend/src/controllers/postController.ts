@@ -1,27 +1,75 @@
 import { Request, Response } from 'express';
+import sharp from 'sharp';
+import fs from 'fs/promises'; // Use promises version
+import path from 'path';
 import Post from '../models/Post';
 import Comment from '../models/Comment';
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const createPost = async (req: Request, res: Response) => {
   const { content, visibility, userId } = req.body;
-  console.log('Received userId in controller:', userId);
 
   if (!userId) {
-    res.status(401).json({ error: 'Unauthorized' }); // If userId is not present, return Unauthorized
+    res.status(401).json({ error: 'Unauthorized' });
     return;
   }
 
+  let imageUrl = null;
+  let originalFilePath = null;
+
   try {
+    if (req.file) {
+      originalFilePath = req.file.path;
+      const uploadsDir = path.join(__dirname, '../../uploads');
+      const outputPath = path.join(uploadsDir, `resized-${req.file.filename}`);
+      imageUrl = `/uploads/resized-${req.file.filename}`;
+
+      // Ensure the uploads directory exists
+      try {
+        await fs.access(uploadsDir);
+      } catch {
+        await fs.mkdir(uploadsDir, { recursive: true });
+      }
+
+      // Process image with sharp
+      const sharpInstance = sharp(originalFilePath);
+      await sharpInstance
+        .resize({ width: 500, height: 500, fit: 'inside' })
+        .toFile(outputPath);
+
+      // Wait for Sharp to finish and release file handles
+      await delay(100);
+
+      // Delete original file
+      try {
+        await fs.unlink(originalFilePath);
+      } catch (unlinkError) {
+        console.error('Failed to delete original file:', unlinkError);
+        // Continue execution even if delete fails
+      }
+    }
+
     const newPost = new Post({
-      author: userId, // Use userId from req.body instead of req.user
+      author: userId,
       content,
       date: new Date(),
       visibility,
+      imageUrl,
     });
 
     await newPost.save();
     res.status(201).json(newPost);
   } catch (error) {
+    // Clean up any files if post creation fails
+    if (imageUrl) {
+      const resizedPath = path.join(__dirname, '../..', imageUrl);
+      try {
+        await fs.unlink(resizedPath);
+      } catch (cleanupError) {
+        console.error('Failed to clean up resized file:', cleanupError);
+      }
+    }
     res.status(500).json({ error: 'Error creating post' });
   }
 };

@@ -44,3 +44,5 @@ export default function Login() {
 }
 
 ```
+
+or use the `useNavigate()` function if we want a more complex button (see `ResponsiveNavBar.tsx`).

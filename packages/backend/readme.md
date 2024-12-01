@@ -1,48 +1,77 @@
 # Backend
 
-## Endpoints
+## API Endpoints
 
-### Login
+All endpoints use base URL: `http://localhost:5000/api`
 
-**URL** : `http://localhost:5000/api/auth/login`
+### Authentication
 
-Example:
+#### Login
 
-```
-curl -X POST http://localhost:5000/api/auth/login \
--H "Content-Type: application/json" \
--d '{
-  "username": "testuser",
-  "password": "password123"
-}'
-```
+- **POST** `/auth/login`
+- Body: `{ username: string, password: string }`
 
-### Register
+#### Register
 
-**URL** : `http://localhost:5000/api/auth/register`
+- **POST** `/auth/register`
+- Body: `{ username: string, password: string }`
 
-Example:
+### Posts
 
-```
-curl -X POST http://localhost:5000/api/auth/register \
--H "Content-Type: application/json" \
--d '{
-  "username": "testuser",
-  "password": "password123"
-}'
-```
+> Requires authentication via cookies
 
-The endpoints below require the logged in user credentials sent from frontend cookies.
-Example
+#### Create Post
 
-### Create New Post
+- **POST** `/posts/newPost`
+- Body:
+  - `content`: string (max 300 chars)
+  - `visibility`: "public" | "private"
+  - `userId`: string
+  - `image`: File (optional)
 
-**URL** : `http://localhost:5000/api/posts/newPost`
+#### Get Posts
 
-### Get All Posts
+- **GET** `/posts/` - Get all posts
+- **GET** `/posts/:postId` - Get single post
 
-**URL** : `http://localhost:5000/api/posts/`
+#### Manage Posts
 
-### Add Comment to a Post
+- **PUT** `/posts/:postId` - Update post
+- **DELETE** `/posts/:postId` - Delete post
 
-**URL** : `http://localhost:5000/api/posts/:postId/comments`
+### Comments
+
+> Requires authentication via cookies
+
+#### Post Comments
+
+- **POST** `/posts/:postId/comments`
+- Body: `{ content: string }`
+
+#### Manage Comments
+
+- **PUT** `/posts/:postId/comments/:commentId`
+- **DELETE** `/posts/:postId/comments/:commentId`
+
+### Friends
+
+> Requires authentication via cookies
+
+- **GET** `/friends` - Get friends list
+- **POST** `/friends/request/:userId` - Send friend request
+- **PUT** `/friends/accept/:userId` - Accept friend request
+- **DELETE** `/friends/:userId` - Remove friend
+
+### User Profile
+
+> Requires authentication via cookies
+
+- **GET** `/profile/:userId` - Get user profile
+- **PUT** `/profile` - Update profile
+
+### Messages
+
+> Requires authentication via cookies
+
+- **GET** `/messages/:userId` - Get chat history
+- **POST** `/messages` - Send message

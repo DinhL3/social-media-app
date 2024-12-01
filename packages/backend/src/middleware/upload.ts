@@ -1,16 +1,10 @@
 import multer from 'multer';
 import path from 'path';
 import sanitize from 'sanitize-filename';
-import fs from 'fs/promises';
 
 const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
+  destination: (req, file, cb) => {
     const uploadsDir = path.join(__dirname, '../../uploads');
-    try {
-      await fs.access(uploadsDir);
-    } catch {
-      await fs.mkdir(uploadsDir, { recursive: true });
-    }
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {

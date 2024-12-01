@@ -13,25 +13,11 @@ import messageController from './controllers/messageController';
 import userProfileController from './controllers/userProfileController';
 import { authenticateToken } from './middleware/authMiddleware';
 import path from 'path'; // Import path
-import fs from 'fs/promises';
 
 dotenv.config();
 // .env file should be in /packages/backend/
 
-async function ensureUploadsFolder() {
-  const uploadsPath = path.join(__dirname, '../uploads');
-  try {
-    await fs.access(uploadsPath);
-    console.log('Uploads directory exists');
-  } catch {
-    await fs.mkdir(uploadsPath, { recursive: true });
-    console.log('Created uploads directory');
-  }
-}
-
 const app = express();
-await ensureUploadsFolder();
-
 const port = 5000;
 
 const databaseUrl = process.env.DATABASE_URL;

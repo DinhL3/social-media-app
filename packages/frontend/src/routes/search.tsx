@@ -5,8 +5,16 @@ import {
   TextField,
   Button,
   Link as MaterialLink,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemAvatar,
+  ListItemText,
+  Divider,
+  Tooltip, // Import Tooltip
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // Import AccountCircleIcon
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
@@ -66,21 +74,26 @@ export default function Search() {
           justifyContent="center"
           sx={{ width: '100%' }}
         >
-          <TextField
-            id="user-search-input"
-            variant="outlined"
-            size="small"
-            fullWidth
-            placeholder="type username..."
-            value={searchValue}
-            onChange={handleChange}
-            error={error}
-            helperText={
+          <Tooltip
+            title={
               error
                 ? 'Input must be at least 3 characters and contain no spaces'
                 : ''
             }
-          />
+            placement="top"
+            arrow
+            open={error}
+          >
+            <TextField
+              id="user-search-input"
+              variant="outlined"
+              size="small"
+              placeholder="type username..."
+              value={searchValue}
+              onChange={handleChange}
+              error={error}
+            />
+          </Tooltip>
           <Button
             id="user-search-button"
             variant="contained"
@@ -93,6 +106,25 @@ export default function Search() {
           </Button>
         </Stack>
       )}
+      <List dense sx={{ mt: 2 }}>
+        {dummyUsers.map((user) => (
+          <>
+            <ListItem key={user.username}>
+              <ListItemButton
+                component={RouterLink}
+                to={`/profile/${user.username}`}
+              >
+                <ListItemAvatar>
+                  <AccountCircleIcon
+                    sx={{ fontSize: 48, color: 'peach.main' }}
+                  />
+                </ListItemAvatar>
+                <ListItemText primary={`@${user.username}`} />
+              </ListItemButton>
+            </ListItem>
+          </>
+        ))}
+      </List>
     </Container>
   );
 }

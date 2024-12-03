@@ -55,6 +55,18 @@ const theme = createTheme({
       main: '#e29578',
       contrastText: '#ffffff',
     },
+    error: {
+      main: '#e29578',
+      contrastText: '#ffffff',
+    },
+    success: {
+      main: '#006d77',
+      contrastText: '#ffffff',
+    },
+    primary: {
+      main: '#006d77',
+      contrastText: '#ffffff',
+    },
   },
   components: {
     MuiTextField: {
@@ -63,6 +75,9 @@ const theme = createTheme({
           '& .MuiOutlinedInput-root': {
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
               borderColor: '#006d77',
+            },
+            '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#e29578',
             },
           },
         },
@@ -73,6 +88,18 @@ const theme = createTheme({
         root: {
           '&.Mui-focused': {
             color: '#006d77',
+          },
+          '&.Mui-error': {
+            color: '#e29578',
+          },
+        },
+      },
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          '&.Mui-error': {
+            color: '#e29578',
           },
         },
       },

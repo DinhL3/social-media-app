@@ -7,10 +7,10 @@ import theme from './theme'; // Import your custom theme
 
 import './index.css';
 
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import '@fontsource/inter/300.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
 
 import Root from './routes/root.tsx';
 import About from './routes/about.tsx';

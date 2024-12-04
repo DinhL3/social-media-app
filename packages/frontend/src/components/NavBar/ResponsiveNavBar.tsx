@@ -26,7 +26,7 @@ import { fetchUserDetails, logout } from '../../features/auth/authSlice';
 import FriendRequestsModal from '../FriendRequestsModal/FriendRequestsModal'; // Import FriendRequestsModal
 import logoImage from '../../assets/some-logo.png'; // Add this import
 
-const pages = ['Home', 'Chat', 'About', 'Search'];
+const pages = ['Home', 'Chat', 'Search', 'About'];
 
 function useIsMobile(): boolean {
   const theme = useTheme();

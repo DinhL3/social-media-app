@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  hatespeech-api:
+    image: bynned/hatespeech-api
+    ports:
+      - "5050:5050"
+    restart: always
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

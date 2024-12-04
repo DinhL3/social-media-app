@@ -13,6 +13,7 @@ import messageController from './controllers/messageController';
 import userProfileController from './controllers/userProfileController';
 import { authenticateToken } from './middleware/authMiddleware';
 import path from 'path'; // Import path
+import userRoutes from './routes/userRoutes';
 
 dotenv.config();
 // .env file should be in /packages/backend/
@@ -52,6 +53,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/friends', friendController);
 app.use('/api/messages', messageController);
 app.use('/api/profile', userProfileController, authenticateToken);
+app.use('/api/users', userRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World from Express with TypeScript!');

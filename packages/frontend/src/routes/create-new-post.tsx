@@ -10,6 +10,10 @@ import {
   TextField,
   Typography,
   Box,
+  Dialog,
+  DialogActions,
+  Alert,
+  AlertTitle,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
@@ -23,11 +27,17 @@ export default function CreateNewPost() {
   const [redirect, setRedirect] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertContent, setAlertContent] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
 
-  // Get loading state from Redux store
   const { loading } = useSelector((state: RootState) => state.posts);
   const { userId } = useSelector((state: RootState) => state.auth);
+
+  const handleClose = () => {
+    setAlertOpen(false);
+    setAlertContent(null);
+  };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -35,16 +45,14 @@ export default function CreateNewPost() {
     const newValue = e.target.value;
     const lineBreaks = newValue.split('\n').length;
 
-    // Allow input and pasting, but enforce the character and line break limits
     if (lineBreaks <= 10 && newValue.length <= 300) {
       setContent(newValue);
     } else {
-      // If pasted content exceeds the conditions, trim it to fit within the limits
       const trimmedValue = newValue
         .split('\n')
-        .slice(0, 10) // Limit to 10 lines
+        .slice(0, 10)
         .join('\n')
-        .slice(0, 300); // Limit to 300 characters
+        .slice(0, 300);
       setContent(trimmedValue);
     }
   };
@@ -57,28 +65,76 @@ export default function CreateNewPost() {
     }
   };
 
-  const handlePostClick = async (e: FormEvent) => {
-    e.preventDefault();
-    if (content.trim().length > 0 && content.trim().length <= 300) {
-      await dispatch(
-        createPost({
-          content,
-          visibility: 'public',
-          userId: userId!,
-          image: image || undefined,
-        }),
-      );
-      setRedirect(true);
+  const checkToxicity = async (text: string) => {
+    try {
+      const response = await fetch('http://localhost:5050/api/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      });
+      const data = await response.json();
+      return data.is_hate_speech;
+    } catch (error) {
+      console.error('Error checking toxicity:', error);
+      return false;
     }
   };
 
-  // Redirect to root after successful post creation
+  const handlePostClick = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (content.trim().length > 0 && content.trim().length <= 300) {
+      const isToxic = await checkToxicity(content);
+      if (isToxic) {
+        setAlertContent('Your post contains toxic content and cannot be posted.');
+        setAlertOpen(true);
+        return;
+      }
+
+      try {
+        await dispatch(
+          createPost({
+            content,
+            visibility: 'public',
+            userId: userId!,
+            image: image || undefined,
+          }),
+        );
+        setRedirect(true);
+      } catch (error: any) {
+        if (error.response?.data?.error) {
+          const { error: errorMessage, details } = error.response.data;
+          if (details?.is_hate_speech) {
+            setAlertContent(
+              `${errorMessage}\n` +
+              `Analyzed Text: "${details.analyzed_text}"\n` +
+              `Confidence: ${(details.probability * 100).toFixed(2)}%`
+            );
+          } else {
+            setAlertContent(errorMessage);
+          }
+        } else {
+          setAlertContent('An unexpected error occurred. Please try again.');
+        }
+        setAlertOpen(true);
+      }
+    }
+  };
+
   if (redirect) {
     return <Navigate to="/" replace />;
   }
 
   return (
     <Container maxWidth="sm" sx={centerContainerStyles}>
+      {alertOpen && (
+        <Alert severity="error" onClose={handleClose} sx={{ mb: 2 }}>
+          <AlertTitle>Error</AlertTitle>
+          {alertContent}
+        </Alert>
+      )}
       <Typography variant="h4" gutterBottom>
         Create a new post
       </Typography>
@@ -107,19 +163,15 @@ export default function CreateNewPost() {
         width="100%"
         sx={{ mt: 1 }}
       >
-        {/* Label wraps the input to make it look like a button */}
         <label htmlFor="image-upload">
           <input
             id="image-upload"
             type="file"
             accept="image/*"
-            style={{ display: 'none' }} // Hide the default file input
+            style={{ display: 'none' }}
             onChange={handleImageChange}
           />
-          <IconButton
-            component="span" // Make the label look like a button
-            sx={{ color: 'tealDark.main' }}
-          >
+          <IconButton component="span" sx={{ color: 'tealDark.main' }}>
             <AddPhotoAlternateOutlinedIcon />
           </IconButton>
         </label>

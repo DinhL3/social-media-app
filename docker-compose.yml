@@ -6,6 +6,8 @@ services:
     ports:
       - "5050:5050"
     restart: always
+    logging:
+      driver: "none"
     networks:
       - app-network
 

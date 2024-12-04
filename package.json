@@ -6,7 +6,7 @@
   "author": "Your Name",
   "license": "ISC",
   "scripts": {
-    "dev": "concurrently \"npm run dev --workspace=frontend\" \"npm run dev --workspace=backend\"",
+    "dev": "concurrently \"npm run dev --workspace=frontend\" \"npm run dev --workspace=backend\" \"docker-compose up\"",
     "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write ."

@@ -205,7 +205,7 @@ const Chat: React.FC = () => {
           }}
         >
           <Typography variant="h5" sx={{ mt: 1, ml: 2 }}>
-            Choose a friend to chat
+            Friends
           </Typography>
           <List>
             {friends.length === 0 ? (

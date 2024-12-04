@@ -12,7 +12,6 @@ import {
   ListItemButton,
   ListItemAvatar,
   ListItemText,
-  Divider,
 } from '@mui/material';
 import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
@@ -228,7 +227,6 @@ const Chat: React.FC = () => {
                       <ListItemText primary={friend.username} />
                     </ListItemButton>
                   </ListItem>
-                  <Divider variant="inset" component="li" />
                 </>
               ))
             )}
@@ -299,12 +297,13 @@ const Chat: React.FC = () => {
                             ? '#dedede'
                             : '#006d77',
                           color: isUserMessage ? '#000000' : '#ffffff',
-                          padding: 1,
-                          borderRadius: 2,
-                          maxWidth: '50%',
+                          padding: '10px 15px',
+                          borderRadius: '20px',
+                          maxWidth: '60%',
                           wordWrap: 'break-word',
                           whiteSpace: 'pre-wrap',
                           overflowWrap: 'break-word',
+                          alignSelf: isUserMessage ? 'flex-start' : 'flex-end',
                         }}
                       >
                         {msg.message}

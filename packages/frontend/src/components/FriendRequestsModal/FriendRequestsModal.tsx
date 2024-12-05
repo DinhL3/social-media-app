@@ -64,11 +64,14 @@ const FriendRequestsModal: React.FC<FriendRequestsModalProps> = ({
     <Modal open={open} onClose={onClose} aria-labelledby="friend-requests-modal">
       <Paper
         sx={{
+          width: '90%',
           maxWidth: 400,
           margin: 'auto',
           marginTop: '10%',
           padding: 3,
           outline: 'none',
+          overflowY: 'auto',
+          maxHeight: '80vh',
         }}
       >
         <Typography variant="h6" gutterBottom>

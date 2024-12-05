@@ -7,6 +7,10 @@ import {
   Stack,
   Button,
   Container,
+  Modal,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import PostCardFeedView from '../components/PostCard/PostCardFeedView';
 import axios from 'axios';
@@ -42,6 +46,7 @@ export default function Profile() {
   const [friendStatus, setFriendStatus] = useState<
     'notFriend' | 'friends' | 'self' | 'friendRequestSent' | null
   >(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -153,6 +158,52 @@ export default function Profile() {
     <Container maxWidth="sm" sx={centerContainerStyles}>
       <Stack spacing={3} width="100%">
         <Typography variant="h4">@{profile.username}</Typography>
+        <Typography
+          variant="body1"
+          sx={{ cursor: 'pointer' }}
+          onClick={() => setModalOpen(true)}
+        >
+          {profile.friends.length} friends
+        </Typography>
+        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+          <Box
+            sx={{
+              width: '90%',
+              maxWidth: 400,
+              margin: 'auto',
+              mt: '10%',
+              bgcolor: 'background.paper',
+              p: 2,
+              borderRadius: 2,
+              outline: 'none',
+              overflowY: 'auto',
+              maxHeight: '80vh',
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Friends
+            </Typography>
+            <List>
+              {profile.friends.map((friend) => (
+                <ListItem
+                  key={friend._id}
+                  component={RouterLink}
+                  to={`/profile/${friend.username}`}
+                  onClick={() => setModalOpen(false)} // Close modal on click
+                  sx={{
+                    textDecoration: 'none', // Removes underline
+                    color: 'inherit', // Inherit text color
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)', // Optional hover effect
+                    },
+                  }}
+                >
+                  <ListItemText primary={`@${friend.username}`} />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Modal>
         <Stack width="15em">
           {friendStatus === 'friends' && (
             <Button
@@ -191,20 +242,6 @@ export default function Profile() {
             </Button>
           )}
         </Stack>
-        <Box>
-          <Typography variant="h6">Friends</Typography>
-          {profile.friends.length > 0 ? (
-            <Stack spacing={1}>
-              {profile.friends.map((friend) => (
-                <Box key={friend._id}>
-                  <Typography>@{friend.username}</Typography>
-                </Box>
-              ))}
-            </Stack>
-          ) : (
-            <Typography>No friends yet</Typography>
-          )}
-        </Box>
         <Box>
           <Typography variant="h6">{profile.username}'s posts:</Typography>
           {userPosts.length > 0 ? (

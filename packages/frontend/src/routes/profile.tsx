@@ -11,7 +11,12 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemButton,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import PostCardFeedView from '../components/PostCard/PostCardFeedView';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -47,6 +52,10 @@ export default function Profile() {
     'notFriend' | 'friends' | 'self' | 'friendRequestSent' | null
   >(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [friendToRemove, setFriendToRemove] = useState<{
+    username: string;
+    id: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -129,6 +138,31 @@ export default function Profile() {
     }
   };
 
+  // Function to handle friend removal
+  const handleRemoveFriend = async () => {
+    if (!currentUser || !friendToRemove) return;
+
+    try {
+      await axios.post(
+        'http://localhost:5000/api/friends/removeFriend',
+        { userId: currentUser.userId, friendId: friendToRemove.id },
+        { withCredentials: true },
+      );
+
+      // Update the profile's friend list
+      setProfile((prev) => ({
+        ...prev!,
+        friends: prev!.friends.filter(
+          (friend) => friend._id !== friendToRemove.id,
+        ),
+      }));
+
+      setFriendToRemove(null); // Close dialog
+    } catch (error) {
+      console.error('Error removing friend:', error);
+    }
+  };
+
   if (loading) {
     return (
       <Box
@@ -159,6 +193,7 @@ export default function Profile() {
       <Stack spacing={3} width="100%">
         <Typography variant="h4">@{profile.username}</Typography>
         <Typography
+          width="8em"
           variant="body1"
           sx={{ cursor: 'pointer' }}
           onClick={() => setModalOpen(true)}
@@ -187,23 +222,61 @@ export default function Profile() {
               {profile.friends.map((friend) => (
                 <ListItem
                   key={friend._id}
-                  component={RouterLink}
-                  to={`/profile/${friend.username}`}
-                  onClick={() => setModalOpen(false)} // Close modal on click
                   sx={{
-                    textDecoration: 'none', // Removes underline
-                    color: 'inherit', // Inherit text color
+                    textDecoration: 'none',
+                    color: 'inherit',
                     '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.04)', // Optional hover effect
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
                     },
                   }}
                 >
-                  <ListItemText primary={`@${friend.username}`} />
+                  <ListItemButton
+                    component={RouterLink}
+                    to={`/profile/${friend.username}`}
+                    onClick={() => setModalOpen(false)}
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                      },
+                    }}
+                  >
+                    <ListItemText primary={`@${friend.username}`} />
+                  </ListItemButton>
+                  {currentUser?.userId === profile._id && (
+                    <DeleteIcon
+                      sx={{ cursor: 'pointer', ml: 2 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFriendToRemove({
+                          username: friend.username,
+                          id: friend._id,
+                        });
+                      }}
+                    />
+                  )}
                 </ListItem>
               ))}
             </List>
           </Box>
         </Modal>
+        <Dialog
+          open={Boolean(friendToRemove)}
+          onClose={() => setFriendToRemove(null)}
+        >
+          <DialogTitle>
+            {`Are you sure you want to remove ${friendToRemove?.username} from your friends?`}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={() => setFriendToRemove(null)}>Cancel</Button>
+            <Button
+              onClick={handleRemoveFriend}
+              color="error"
+              variant="contained"
+            >
+              Remove
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Stack width="15em">
           {friendStatus === 'friends' && (
             <Button

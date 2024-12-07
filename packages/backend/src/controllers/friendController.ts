@@ -134,5 +134,31 @@ router.get('/requests/:userId', async (req: Request, res: Response) => {
   }
 });
 
+// Remove a friend
+router.post('/removeFriend', async (req: Request, res: Response) => {
+  const { userId, friendId } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    const friend = await User.findById(friendId);
+
+    if (!user || !friend) {
+      res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Remove friendId from user's friends list
+    user.friends = user.friends.filter((id) => id.toString() !== friendId);
+
+    // Remove userId from friend's friends list
+    friend.friends = friend.friends.filter((id) => id.toString() !== userId);
+
+    await user.save();
+    await friend.save();
+
+    res.status(200).json({ message: 'Friend removed successfully.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 export default router;

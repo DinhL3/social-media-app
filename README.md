@@ -11,10 +11,10 @@ The Social Media App is designed to facilitate meaningful connections and intera
 
 - **User Authentication**: Secure login and registration.
 - **Post Creation**: Users can create, edit, and delete posts with text and images.
-- **Comments**: Engage with posts through comments.
+- **Comments**: Engage with posts through comments and likes.
 - **Friend Management**: Send, accept, and remove friend requests.
 - **User Profiles**: View and update user profiles.
-- **Real-time Chat**: Communicate with friends in real-time.
+- **Real-time Chat**: Communicate with friends in real-time via DMs.
 
 ## Installation
 
